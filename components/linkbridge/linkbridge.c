@@ -35,7 +35,7 @@ esp_err_t linkbridge_start(double initial_bpm)
     s_link = abl_link_create(initial_bpm);
     s_ss   = abl_link_create_session_state();   /* ONCE, for the whole life */
     abl_link_enable(s_link, true);              /* begin discovery and sync */
-    ESP_LOGI(TAG, "Ableton Link abilitato (tempo iniziale %.2f BPM)", initial_bpm);
+    ESP_LOGI(TAG, "Ableton Link enabled (initial tempo %.2f BPM)", initial_bpm);
     return ESP_OK;
 }
 

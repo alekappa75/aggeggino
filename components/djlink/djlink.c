@@ -343,7 +343,7 @@ size_t djlink_build_beat(uint8_t *buf, const char *name, uint8_t device,
 {
     memset(buf, 0, DJLINK_BEATPKT_LEN);
     memcpy(buf, djlink_magic, 10);
-    buf[0x0a] = 0x28;                        /* tipo beat */
+    buf[0x0a] = 0x28;                        /* beat type */
     if (name) { size_t n = strlen(name); if (n > 20) n = 20; memcpy(&buf[0x0b], name, n); }
     buf[0x1f] = 0x01;                        /* byte after the name */
     buf[0x20] = 0x00;                        /* subtype 00 */
@@ -373,7 +373,7 @@ size_t djlink_build_takeover_resp(uint8_t *buf, const char *name, uint8_t device
 {
     memset(buf, 0, DJLINK_TKRESP_LEN);
     memcpy(buf, djlink_magic, 10);
-    buf[0x0a] = 0x27;                        /* tipo: takeover response */
+    buf[0x0a] = 0x27;                        /* type: takeover response */
     if (name) { size_t n = strlen(name); if (n > 20) n = 20; memcpy(&buf[0x0b], name, n); }
     buf[0x1f] = 0x01;
     buf[0x20] = 0x00;                        /* subtype 00 */

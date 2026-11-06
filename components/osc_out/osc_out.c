@@ -148,8 +148,8 @@ void osc_out_configure(const char *host, uint16_t port,
         return;
     }
     s_dst_ok = true;
-    ESP_LOGI(TAG, "destinazione %s:%u preset=%d %s",
-             host, (unsigned)port, (int)preset, enabled ? "attiva" : "spenta");
+    ESP_LOGI(TAG, "destination %s:%u preset=%d %s",
+             host, (unsigned)port, (int)preset, enabled ? "active" : "off");
 
     /* The socket follows the enable flag, and both are handled HERE because
      * this is the only place that knows both states.
@@ -182,7 +182,7 @@ void osc_out_close_socket(void)
      * descriptors, which start at an offset — it returns -1 without closing,
      * and the socket stays dangling. */
     int rc = lwip_close(s_sock);
-    ESP_LOGI(TAG, "socket chiuso (fd=%d, rc=%d)", s_sock, rc);
+    ESP_LOGI(TAG, "socket closed (fd=%d, rc=%d)", s_sock, rc);
     s_sock = -1;
 }
 bool osc_out_dest_ok(void)   { return s_dst_ok;    }

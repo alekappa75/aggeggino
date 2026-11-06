@@ -722,9 +722,9 @@ static void link_transport_tick(void)
     bool reverse = ui_clock_src() == CLOCK_SRC_ABLETON;
     bool allowed = playing ? settings_get_start_sync() : settings_get_stop_sync();
     if (!reverse || !allowed) {
-        ESP_LOGI(TAG, "[transport] Link %s ignorato (%s)",
+        ESP_LOGI(TAG, "[transport] Link %s ignored (%s)",
                  playing ? "PLAY" : "STOP",
-                 !reverse ? "bridge not reverse" : "filtro off");
+                 !reverse ? "bridge not reverse" : "filter off");
         return;
     }
     /* MIND THE SEMANTICS: PLAY only starts players stopped ON THE CUE, and STOP
@@ -976,7 +976,7 @@ static void corr_discontinuity(const char *why)
 {
     if (!s_corr_on) return;
     s_corr_readopt = true;
-    ESP_LOGI(TAG, "[drift] %s: rimisuro da capo (tengo %+d ppm)",
+    ESP_LOGI(TAG, "[drift] %s: measuring again from scratch (keeping %+d ppm)",
              why, (int)lround(s_corr * 1e6));
 }
 
@@ -1031,7 +1031,7 @@ static void corr_roundtrip_check(double wrote)
              (int)lround(err));
 }
 
-static void tempo_push(double bpm, uint8_t dev);  /* fwd: usata da drain_status */
+static void tempo_push(double bpm, uint8_t dev);  /* fwd: used by drain_status */
 /* Shared with the ISR. Declared HERE and not further down with the rest of the
  * block: drain_w5500 reads s_int_last_us, and comes first. */
 static volatile int64_t  s_int_last_us = 0;    /* instant of the last trigger */
@@ -1305,7 +1305,7 @@ static void drain_status(void)
             /* yielding, and the recipient has taken master? then we withdraw */
             if (s_yield_to && s.device == s_yield_to && s.is_master) {
                 ESP_LOGI(TAG, "[master] device %d took the master: withdrawing", s_yield_to);
-                s_sync_n   = s_sync_n_max + 1;        /* come da protocollo */
+                s_sync_n   = s_sync_n_max + 1;        /* as the protocol requires */
                 s_yield_to = 0;
                 ui_set_clock_src(CLOCK_SRC_NONE);        /* behaviour A: source cleared */
                 int64_t tnow = esp_timer_get_time();
@@ -1356,10 +1356,10 @@ static void handle_takeover_req(const uint8_t *buf, int32_t n)
     if (s_net_role != NET_MASTER) return;        /* not master: nothing to yield */
 
     if (s_yield_to != who) {
-        s_yield_to = who;                        /* i nostri status ora portano Mh=who */
+        s_yield_to = who;                        /* our statuses now carry Mh=who */
         ESP_LOGI(TAG, "[master] device %d asks for the master: YIELDING (courtesy to the DJ)", who);
     }
-    if (who < DEVNUM_MAX) {                      /* consenso esplicito (0x27) */
+    if (who < DEVNUM_MAX) {                      /* explicit consent (0x27) */
         uint8_t rsp[DJLINK_TKRESP_LEN];
         djlink_build_takeover_resp(rsp, "aggeggino", s_ka_device);
         w5500_net_sendto(UDP_SN_BEAT, rsp, DJLINK_TKRESP_LEN, s_dev_ip[who], DJLINK_PORT_BEAT);
@@ -1380,7 +1380,7 @@ static void handle_takeover_req(const uint8_t *buf, int32_t n)
  * keep-alives, and its receive buffer would fill with nobody emptying it. */
 static void drain_discovery(void)
 {
-    if (bsp_spi_in_quiet_window()) return;   /* precedenza al beat, vedi drain_status */
+    if (bsp_spi_in_quiet_window()) return;   /* the beat comes first, see drain_status */
 
     static uint8_t rxbuf[512];
     uint8_t fip[4]; uint16_t fport;
@@ -1438,7 +1438,7 @@ static void drain_discovery(void)
 /* beat on :50001 -> accept ONLY the current master's beats */
 static void drain_w5500(void)
 {
-    if (bsp_spi_in_quiet_window()) return;   /* precedenza al beat, vedi drain_status */
+    if (bsp_spi_in_quiet_window()) return;   /* the beat comes first, see drain_status */
 
     uint8_t m = master_current(esp_timer_get_time());
 
@@ -1459,7 +1459,7 @@ static void drain_w5500(void)
 
         if (is_beat) {
             s_last_djlink_us = esp_timer_get_time();   /* the Pioneer network is alive */
-            devnum_seen(b.device);                     /* censimento slot in uso */
+            devnum_seen(b.device);                     /* census of the slots in use */
             if (b.device < DEVNUM_MAX) memcpy(s_dev_ip[b.device], fip, 4);
 
                 /* EVERY player, not only the master. In the reverse direction
@@ -1480,7 +1480,7 @@ static void drain_w5500(void)
                 phase_on_master_beat(b.beat_in_bar, T);
             }
         }
-        s_rx_tail++;                        /* posizione liberata */
+        s_rx_tail++;                        /* slot released */
     }
 }
 
@@ -1511,7 +1511,7 @@ static void tempo_commit(double bpm_w, int64_t now)
     s_last_set_bpm  = bpm_w;   /* remembered to recognise a peer's intervention */
     s_tempo_last_us = now;
     s_tempo_pend    = 0.0;
-    ESP_LOGI(TAG, "[tempo] dj=%d.%02d link era %d.%02d -> aggiornato",
+    ESP_LOGI(TAG, "[tempo] dj=%d.%02d link was %d.%02d -> updated",
              (int)bpm_w, (int)(bpm_w * 100) % 100,
              (int)link_now, (int)(link_now * 100) % 100);
 }
@@ -1649,7 +1649,7 @@ static void int_rx_task(void *arg)
          * The head is published in one go AFTER marking: advancing it slot by
          * slot would let the consumer read one before we know its outcome. */
         if (head_w != s_rx_head) {
-            s_rx_head = head_w;                             /* pubblica */
+            s_rx_head = head_w;                             /* publish */
         }
     }
 }
@@ -1730,7 +1730,7 @@ static void phase_on_master_beat(uint8_t b, int64_t T)
             ESP_LOGI(TAG, "[phase] master %d -> %d: offset %+d us, dBPM %d.%02d -> %s",
                      prev_dev, st.dj_dev, (int)(err),
                      (int)dbpm, (int)(dbpm * 100) % 100,
-                     master_jump ? "ri-ancoro" : "tengo l'ancora");
+                     master_jump ? "re-anchoring" : "keeping the anchor");
         }
 
         if (s_phase_reanchor) {
@@ -1747,7 +1747,7 @@ static void phase_on_master_beat(uint8_t b, int64_t T)
             s_db_us = implied_db;
             s_force_next = true;
         } else {
-            s_db_us = expected_db + (int64_t)(PHASE_ALPHA * (double)err);   /* liscia jitter */
+            s_db_us = expected_db + (int64_t)(PHASE_ALPHA * (double)err);   /* smooths jitter */
         }
     }
 
@@ -1755,7 +1755,7 @@ static void phase_on_master_beat(uint8_t b, int64_t T)
     if (ui_clock_src() != CLOCK_SRC_DJLINK || s_master_mm == 2) return;
 
     int64_t now     = esp_timer_get_time();
-    double  k       = round((double)(now - s_db_us) / bar_us);  /* downbeat vicino a ora */
+    double  k       = round((double)(now - s_db_us) / bar_us);  /* downbeat nearest now */
     int64_t near_db = s_db_us + (int64_t)(k * bar_us);
     int64_t target  = near_db + (int64_t)ui_get_phase_offset_dj_us();
 
@@ -1763,7 +1763,7 @@ static void phase_on_master_beat(uint8_t b, int64_t T)
     double ph  = linkbridge_phase_at(target, LINK_QUANTUM);     /* [0, quantum)      */
     double sgn = ph;
     if (sgn > LINK_QUANTUM / 2.0) sgn -= LINK_QUANTUM;           /* [-q/2, q/2)       */
-    double dev_ms_signed = sgn * (60000.0 / bpm);               /* + = Link avanti   */
+    double dev_ms_signed = sgn * (60000.0 / bpm);               /* + = Link ahead    */
     double dev_ms        = fabs(dev_ms_signed);
     s_dev_ms = dev_ms_signed;   /* read by the corrector's feedback */
 
@@ -1792,7 +1792,7 @@ static void phase_on_master_beat(uint8_t b, int64_t T)
     double bpm_w       = tempo_corrected(bpm);        /* what we want it to BE */
     bool   rekordbox   = (s_master_mm != 2);
     bool   tempo_changed = (fabs(bpm_w - link_now) > TEMPO_EPS) || s_corr_dirty;
-    bool   offset_adj  = ui_offset_changed();   /* regolazione manuale in corso */
+    bool   offset_adj  = ui_offset_changed();   /* a manual adjustment is under way */
     bool   forced      = s_force_next;          /* for the log: was this lock requested? */
     s_force_next = false;
 
@@ -2113,7 +2113,7 @@ static ui_lan_t lan_badge_state(void)
 {
     if (st.ver != 0x04) return UI_LAN_CHIP_KO;   /* the W5500 does not answer */
     if (!st.link_up)    return UI_LAN_NO_CABLE;  /* present, but cable unplugged */
-    return UI_LAN_UP;                            /* catena fisica a posto   */
+    return UI_LAN_UP;                            /* the physical chain is fine */
 }
 
 static ui_wifi_t wifi_badge_state(void)
@@ -2169,14 +2169,14 @@ static bool wifi_auth_badge(void)
  * is needed here because switching AUTO/OBSERVER must be able to yield the role
  * before renegotiating the identity. */
 static void master_handover(int64_t now);
-static uint8_t s_virt_num = DJLINK_VCDJ_DEVICE;   /* numero virtuale scelto (7-15) */
+static uint8_t s_virt_num = DJLINK_VCDJ_DEVICE;   /* the virtual number chosen (7-15) */
 
 void djb_set_force_virtual(bool force)
 {
     if (s_force_virtual == force) return;
     s_force_virtual = force;
     ESP_LOGI(TAG, "[ident] virtual identity %s, user's choice",
-             force ? "FORZATA" : "no longer forced");
+             force ? "FORCED" : "no longer forced");
 
     int64_t now = esp_timer_get_time();
 
@@ -2239,7 +2239,7 @@ static const char *net_role_name(net_role_t r)
     switch (r) {
         case NET_OFFLINE:  return "OFFLINE";
         case NET_CENSUS:   return "CENSUS";
-        case NET_OBSERVER: return s_identity_real ? "OBSERVER" : "OBSERVER(virtuale)";
+        case NET_OBSERVER: return s_identity_real ? "OBSERVER" : "OBSERVER(virtual)";
         case NET_CLAIMING: return "CLAIMING";
         case NET_HOLDING:  return "HOLDING";
         case NET_MASTER:   return "MASTER";
@@ -2266,7 +2266,7 @@ static void net_set_role(net_role_t r, int64_t now)
         s_master_failed_us  = 0;
         ESP_LOGI(TAG, "[status] starting neutral status as device %d", s_claim_num);
     }
-    if (r == NET_OBSERVER) s_negotiation_start = 0;   /* trattativa abbandonata */
+    if (r == NET_OBSERVER) s_negotiation_start = 0;   /* negotiation abandoned */
     if (r == NET_MASTER) {
         /* who was driving before us? we will need it to hand the baton back */
         if (st.master_dev && st.master_dev != s_ka_device && st.master_dev < DEVNUM_MAX)
@@ -2345,7 +2345,7 @@ static void try_claim(int64_t now)
     uint8_t n = s_force_virtual ? 0 : devnum_pick_free(now);
     if (n && ++s_claim_tries > CLAIM_MAX_TRIES) {
         ESP_LOGI(TAG, "[claim] too many conflicts: giving up on a real number");
-        n = 0;                            /* ci arrendiamo: device virtuale */
+        n = 0;                            /* we give up: a virtual device */
     }
     if (n == 0) {
         /* We stay a virtual device (7): either because the user chose it, or
@@ -2364,11 +2364,11 @@ static void try_claim(int64_t now)
              * With nine numbers available this case is far rarer than it was
              * with three. */
             v = DJLINK_VCDJ_DEVICE;
-            s_ident_ko = true;                /* -> LED bianco lampeggiante */
+            s_ident_ko = true;                /* -> blinking white LED */
             ESP_LOGE(TAG, "[ident] every virtual number (7-15) is taken! "
                           "Using %d anyway, but there is a CONFLICT on the network: "
                           "turn off the other virtual player (beat-link? rekordbox? "
-                          "un altro bridge?).", v);
+                          "another bridge?).", v);
         }
         else s_ident_ko = false;           /* a free number does exist */
         s_virt_num = v;
@@ -2533,11 +2533,11 @@ static void portmap_tick(int64_t now)
          * registered here. NULL (proc 0) is answered too, out of courtesy. */
         uint8_t tx[28]; int i = 0;
         tx[i++]=(uint8_t)(xid>>24); tx[i++]=(uint8_t)(xid>>16);
-        tx[i++]=(uint8_t)(xid>>8);  tx[i++]=(uint8_t)xid;      /* XID identico  */
+        tx[i++]=(uint8_t)(xid>>8);  tx[i++]=(uint8_t)xid;      /* identical XID */
         tx[i++]=0; tx[i++]=0; tx[i++]=0; tx[i++]=1;            /* REPLY         */
         tx[i++]=0; tx[i++]=0; tx[i++]=0; tx[i++]=0;            /* MSG_ACCEPTED  */
         tx[i++]=0; tx[i++]=0; tx[i++]=0; tx[i++]=0;            /* verifier: AUTH_NULL */
-        tx[i++]=0; tx[i++]=0; tx[i++]=0; tx[i++]=0;            /*   lunghezza 0 */
+        tx[i++]=0; tx[i++]=0; tx[i++]=0; tx[i++]=0;            /*   length 0    */
         tx[i++]=0; tx[i++]=0; tx[i++]=0; tx[i++]=0;            /* accept: SUCCESS */
         if (proc == 3) {                                        /* GETPORT       */
             tx[i++]=0; tx[i++]=0; tx[i++]=0; tx[i++]=0;        /* porta = 0     */
@@ -2547,7 +2547,7 @@ static void portmap_tick(int64_t now)
          * would flood the monitor. We count them and report in the heartbeat.
          * The FIRST one is logged, so the mechanism can be seen to start. */
         if (s_pm_replies == 0)
-            ESP_LOGI(TAG, "[rpc] %d.%d.%d.%d chiede MOUNT/NFS -> rispondo "
+            ESP_LOGI(TAG, "[rpc] %d.%d.%d.%d asks for MOUNT/NFS -> replying "
                           "'service unavailable' (further ones not logged)",
                      fip[0], fip[1], fip[2], fip[3]);
         s_pm_replies++;
@@ -2760,7 +2760,7 @@ static void nowplaying_note(const djlink_status_t *s)
     s_np_want_id   = s->track_id;
     s_np_retry_us  = 0;
     ESP_LOGI(TAG, "[now] the master (device %d) plays track %lu from device %d "
-                  "(slot %d): chiedo i metadati",
+                  "(slot %d): asking for the metadata",
              s->device, (unsigned long)s->track_id, s->track_device, s->track_slot);
 }
 
@@ -2771,13 +2771,13 @@ static void nowplaying_note(const djlink_status_t *s)
  * again. The loop NEVER stops: beats fall every 470 ms or so. */
 typedef enum {
     NP_IDLE = 0,
-    NP_DIR_CONNECT,   /* connessione al "centralino" :12523    */
-    NP_DIR_WAIT,      /* waiting for the data service port     */
-    NP_DB_CONNECT,    /* connessione al servizio dati          */
-    NP_DB_HELLO,      /* handshake 5 byte                      */
-    NP_DB_SETUP,      /* setup di contesto                     */
-    NP_DB_META,       /* "how many elements for track N?"      */
-    NP_DB_RENDER,     /* "mandameli"                           */
+    NP_DIR_CONNECT,   /* connecting to the "switchboard" :12523 */
+    NP_DIR_WAIT,      /* waiting for the data service port      */
+    NP_DB_CONNECT,    /* connecting to the data service         */
+    NP_DB_HELLO,      /* 5-byte handshake                       */
+    NP_DB_SETUP,      /* context setup                          */
+    NP_DB_META,       /* "how many elements for track N?"       */
+    NP_DB_RENDER,     /* "send them to me"                      */
 } np_state_t;
 
 static np_state_t s_np    = NP_IDLE;
@@ -2806,7 +2806,7 @@ static uint32_t   s_np_id_q = 0;
  * out. */
 static uint8_t    s_np_out[160];
 static size_t     s_np_out_len = 0;
-static uint32_t   s_np_busy    = 0;   /* giri consecutivi con SOCK_BUSY */
+static uint32_t   s_np_busy    = 0;   /* consecutive passes with SOCK_BUSY */
 static np_state_t s_np_after   = NP_IDLE;
 
 static void np_send(const uint8_t *b, size_t n, np_state_t next)
@@ -2913,7 +2913,7 @@ static void nowplaying_tick(int64_t now)
         } else if (r < 0) {
             np_abort("send failed");
         } else {
-            s_np_busy++;                        /* SOCK_BUSY: riproviamo */
+            s_np_busy++;                        /* SOCK_BUSY: we retry */
         }
         return;
     }
@@ -2935,7 +2935,7 @@ static void nowplaying_tick(int64_t now)
     }
     case NP_DIR_WAIT:
         n = w5500_net_tcp_recv(TCP_SN_PROBE, s_np_buf, sizeof(s_np_buf));
-        if (n < 0) { np_abort("centralino ha chiuso"); return; }
+        if (n < 0) { np_abort("the switchboard closed"); return; }
         if (n < 2) return;
         s_np_port = ((uint16_t)s_np_buf[0] << 8) | s_np_buf[1];
         w5500_net_tcp_disconnect(TCP_SN_PROBE);
@@ -3000,7 +3000,7 @@ static void nowplaying_tick(int64_t now)
                      ((uint32_t)s_np_buf[40]<<8) | s_np_buf[41];
         ESP_LOGI(TAG, "[now] the player has %lu items for this track",
                  (unsigned long)s_np_count);
-        if (!s_np_count || s_np_count > 64) { np_abort("conteggio assurdo"); return; }
+        if (!s_np_count || s_np_count > 64) { np_abort("absurd count"); return; }
         len = db_req_render(msg, ++s_np_txid, s_np_asking,
                             s_np_slot, s_np_type, s_np_count);
         s_np_len = 0;
@@ -3015,7 +3015,7 @@ static void nowplaying_tick(int64_t now)
                                (int32_t)sizeof(s_np_buf) - s_np_len);
         if (n > 0) {
             s_np_len += n;
-            s_np_deadline = now + NP_STEP_TIMEOUT_US;   /* arriva roba: pazienza */
+            s_np_deadline = now + NP_STEP_TIMEOUT_US;   /* data is arriving: be patient */
         } else if (n < 0 && s_np_len == 0) {
             np_abort("the player closed the connection"); return;
         }
@@ -3069,7 +3069,7 @@ static void nowplaying_tick(int64_t now)
                     ui_set_track(s_np_title, s_np_artist);
                 }
                 if (s_np_want_dev == s_np_dev && s_np_want_id == s_np_id_q)
-                    s_np_want_dev = 0;                  /* richiesta soddisfatta */
+                    s_np_want_dev = 0;                  /* request satisfied */
                 s_np_for_playlist = false;
                 w5500_net_tcp_disconnect(TCP_SN_PROBE);
                 s_np = NP_IDLE;
@@ -3093,7 +3093,7 @@ static void nowplaying_tick(int64_t now)
  * answer with a track that identifies the bridge. */
 #define DB_TRACK_TITLE   "Ableton Live"
 #define DB_TRACK_ARTIST  "aggeggino"
-#define DB_ITEM_COUNT    3          /* titolo, artista, tempo */
+#define DB_ITEM_COUNT    3          /* title, artist, tempo */
 
 static bool db_handle_message(const uint8_t *b, int32_t n)
 {
@@ -3267,7 +3267,7 @@ static void beat_timer_cb(void *arg)            /* timer context: notify only */
     portYIELD_FROM_ISR(hpw);
 }
 
-static void beat_task(void *arg)                /* alta priorita': spedisce */
+static void beat_task(void *arg)                /* high priority: it sends */
 {
     (void)arg;
     uint8_t buf[DJLINK_BEATPKT_LEN];
@@ -3327,7 +3327,7 @@ static void beat_task(void *arg)                /* alta priorita': spedisce */
         int64_t t_out = esp_timer_get_time();
         int32_t real = (int32_t)(t_out - s_beat_target);
         if (real > s_beat_out_max) s_beat_out_max = real;
-        int32_t txdur = (int32_t)(t_out - t_wake);     /* appaiata: stesso beat */
+        int32_t txdur = (int32_t)(t_out - t_wake);     /* paired: the same beat */
         if (txdur > s_beat_tx_max) s_beat_tx_max = txdur;
         if (real < s_beat_out_min) s_beat_out_min = real;
 #endif
@@ -3408,7 +3408,7 @@ static volatile int32_t  s_midi_lat_max;   /* delivery - intended instant */
 /* A WiFi transition is under way: we are waiting for the address on the new
  * interface. Declared HERE, rather than among the WiFi variables, because
  * midi_net_poll() — which lives higher up the file — reads it too. */
-static volatile bool s_link_wait_got_ip = false;   /* Link riacceso al GOT_IP */
+static volatile bool s_link_wait_got_ip = false;   /* Link switched back on at GOT_IP */
 
 /* --- transport: Network MIDI 2.0 -------------------------------------------
  *
@@ -3504,7 +3504,7 @@ static void midi_net_stop(void)
     if (!s_mnet) return;
     midi2_net_host_stop(s_mnet);
     s_mnet = NULL;
-    ESP_LOGI(TAG, "[midinet] host fermato");
+    ESP_LOGI(TAG, "[midinet] host stopped");
 }
 
 /* The Announce value the currently running host was started with. */
@@ -3554,7 +3554,7 @@ static void midi_net_poll(void)
 #endif /* DJB_MIDI_NET */
 
 #if DJB_MIDI_DIN
-/* --- trasporto: MIDI DIN (M5Stack Unit MIDI U187, Port C) ------------------
+/* --- transport: MIDI DIN (M5Stack Unit MIDI U187, Port C) ------------------
  *
  * The simplest of the three sinks, for a structural reason: the UART has its
  * OWN FIFO and shift register. Writing a byte is a register access of a few
@@ -3672,7 +3672,7 @@ static void midi_din_pin_init(void)
         .intr_type    = GPIO_INTR_DISABLE,
     };
     gpio_config(&g);
-    ESP_LOGI(TAG, "[din] rilevazione continua su GPIO%d (pull-down permanente)",
+    ESP_LOGI(TAG, "[din] continuous detection on GPIO%d (permanent pull-down)",
              MDIN_SENSE_GPIO);
 }
 
@@ -3897,7 +3897,7 @@ static volatile uint32_t s_cv_pulses = 0;
  * and gates; should the opposite ever be needed, it is a parameter. */
 #define CV_GPIO        8
 
-/* --- PARAMETRI, dal menu -------------------------------------------------
+/* --- PARAMETERS, from the menu -------------------------------------------
  *
  * WIDTH in milliseconds. Fixed values, because the inputs do not agree: some
  * want a minimum of 1 ms, others prefer wider pulses.
@@ -3990,7 +3990,7 @@ static void cv_pulse_cb(void *arg)
         /* The note on the SAM is an EXTRA and needs the module: without it the
          * CV still leaves from the GPIO. */
     if (!s_din_up) return;
-    /* Note On ONLY, as the official example does: GM percussion is on colpo
+    /* Note On ONLY, as the official example does: GM percussion is one-shot by
          * single, and a Note Off is unnecessary. Dropping it halves the bytes
          * and, above all, removes a message that on some synths shortens the
          * sound's tail — the opposite of what we want to measure. */
@@ -4091,14 +4091,14 @@ static void cv_poll(void)
                       "| SAM note: %s (%s)",
                  CV_GPIO, cv_ppqn(), cv_width_us() / 1000,
                  cv_idle() ? "ALTO" : "basso",
-                 s_din_up ? "si" : "NO (manca il modulo DIN)",
+                 s_din_up ? "yes" : "NO (the DIN module is missing)",
                  s_sam_snd[idx].name);
         p_idx = idx;
     } else if (!want && s_cv_on) {
         s_cv_on = false;
         if (s_cv_timer) esp_timer_stop(s_cv_timer);
         if (s_cv_fall)  esp_timer_stop(s_cv_fall);
-        if (s_cv_pin_ok) gpio_set_level(CV_GPIO, 0);   /* mai lasciarlo alto */
+        if (s_cv_pin_ok) gpio_set_level(CV_GPIO, 0);   /* never leave it high */
         ESP_LOGI(TAG, "[cv] output off");
     }
 }
@@ -4130,7 +4130,7 @@ static inline void sam_cv_tick(uint8_t status, int64_t due_us)
              * unintelligible symptom.
                  *
                  * 45% leaves a clean edge and never comes close to touching
-                 * l'impulso successivo. */
+                 * the next pulse. */
                 int wmax = (int)(period * 45 / 100);
                 int w    = cv_width_us();
                 s_cv_width_us = (w > wmax) ? wmax : w;
@@ -4245,7 +4245,7 @@ static void midi_usb_deferred_start(int64_t now)
         .product      = "Aggeggino",
         .manufacturer = "KTEK Labs",
         .port_name    = NULL,      /* -> "Aggeggino clock" */
-        .serial       = NULL,      /* -> derivato dal MAC  */
+        .serial       = NULL,      /* -> derived from the MAC */
         .task_core    = 1,
         .task_prio    = 0,         /* the component's default: 5   */
         .task_stack   = 0,         /* default: 4096, to be tuned from the logs */
@@ -4864,7 +4864,7 @@ static void master_tick(int64_t now)
     if (s_negotiation_start && (now - s_negotiation_start) > MASTER_NEGOTIATION_TIMEOUT_US) {
         ESP_LOGI(TAG, "[master] TIMEOUT: no master obtained in %ds, giving up",
                  (int)(MASTER_NEGOTIATION_TIMEOUT_US / 1000000));
-        s_master_failed_us  = now;              /* badge rosso lampeggiante */
+        s_master_failed_us  = now;              /* blinking red badge */
         s_negotiation_start = 0;
         ui_set_clock_src(CLOCK_SRC_NONE);          /* the source is cleared */
         net_set_role(NET_OBSERVER, now);        /* back to observer: the NUMBER
@@ -5091,7 +5091,7 @@ static void cpu_usage_log(int64_t interval_us)
         for (int d = TRANSPORT_DEV_MIN; d <= TRANSPORT_DEV_MAX && d < DEVNUM_MAX; d++) {
             if (d != s_ka_device && (s_st_rx_n[d] || s_st_rx_last[d]) &&
                 off < sizeof(line) - 1) {
-                int w = snprintf(line + off, sizeof(line) - off, " | %d:n=%u buco=%ums",
+                int w = snprintf(line + off, sizeof(line) - off, " | %d:n=%u gap=%ums",
                                  d, (unsigned)s_st_rx_n[d], (unsigned)s_st_gap_ms[d]);
                 /* snprintf returns what it WOULD have written: without the
                  * ceiling, off would exceed the buffer and (sizeof - off) would
@@ -5159,7 +5159,7 @@ static void cpu_usage_log(int64_t interval_us)
      * pulses per beat and MIDI2_NET_TX_QUEUE_LEN must be raised. */
     if (s_mnet) {
         ESP_LOGI(TAG, "[midi-ui] transport on=%d (net host=%d, DIN=%d) "
-                      "| settaggio Enabled=%d",
+                      "| Enabled setting=%d",
                  (int)s_midi_up_seen, (int)(s_mnet != NULL),
 #if DJB_MIDI_DIN
                  (int)s_din_up,
@@ -5466,7 +5466,7 @@ void app_main(void)
             xTaskCreatePinnedToCore(osc_task, "osc_tx", OSC_TASK_STACK, NULL,
                                     OSC_TASK_PRIO, &s_osc_task, 1) == pdPASS) {
             osc_schedule_next(esp_timer_get_time());
-            ESP_LOGI(TAG, "[osc] motore avviato (core 1, prio %d)", OSC_TASK_PRIO);
+            ESP_LOGI(TAG, "[osc] engine started (core 1, prio %d)", OSC_TASK_PRIO);
         } else {
             ESP_LOGW(TAG, "[osc] start failed: no OSC output");
             s_osc_task = NULL;
@@ -5931,11 +5931,11 @@ void app_main(void)
                      * auto-ip — so the address is very likely a different one:
                      * everything that binds to it goes back up. */
                     reopen_after_address_change();
-                    ESP_LOGI(TAG, "DJ Link ripristinato");
+                    ESP_LOGI(TAG, "DJ Link restored");
                     prev_alive = true;
                 }
             } else if (!alive && prev_alive) {
-                ESP_LOGW(TAG, "W5500 sparito (0x%02x)", v);
+                ESP_LOGW(TAG, "W5500 gone (0x%02x)", v);
                 prev_alive = false;
             }
             const bool link_before = st.link_up;

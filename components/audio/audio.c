@@ -322,7 +322,7 @@ esp_err_t audio_init(void)
     uint8_t reg = 0x00, rx[2] = {0};
     err = i2c_master_transmit_receive(s_aw88298, &reg, 1, rx, 2, 100);
     if (err != ESP_OK) { ESP_LOGW(TAG, "AW88298 not answering (%s): audio off", esp_err_to_name(err)); return err; }
-    ESP_LOGI(TAG, "AW88298 reg0x00 = 0x%02x%02x (chip presente)", rx[0], rx[1]);
+    ESP_LOGI(TAG, "AW88298 reg0x00 = 0x%02x%02x (chip present)", rx[0], rx[1]);
 
     err = aw88298_configure();
     if (err != ESP_OK) { ESP_LOGW(TAG, "AW88298 config failed (%s): audio off", esp_err_to_name(err)); return err; }

@@ -4,7 +4,7 @@
 
 static const char *TAG = "leds";
 
-#define LED_GPIO   5     /* da schematico Bottom3: M5Bus pin8 RGB = GPIO5 */
+#define LED_GPIO   5     /* from the Bottom3 schematic: M5Bus pin8 RGB = GPIO5 */
 #define LED_COUNT  10
 
 static led_strip_handle_t s_strip;

@@ -1406,7 +1406,7 @@ esp_err_t midi2_net_host_start(const midi2_net_host_config_t *cfg,
 
     ESP_LOGI(TAG, "Network MIDI 2.0 Host '%s' on UDP port %u (mDNS %s)",
              h->endpoint_name, h->port, h->enable_mdns ? "on" : "off");
-    ESP_LOGI(TAG, "aperti: servizio=%d wake=%d", h->sock, h->wake_sock);
+    ESP_LOGI(TAG, "opened: service=%d wake=%d", h->sock, h->wake_sock);
     *out = h;
     return ESP_OK;
 

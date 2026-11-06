@@ -1,7 +1,7 @@
 /* ============================================================================
- * audio_samples.c - campioni di feedback UI, PRE-CALCOLATI e in FLASH.
+ * audio_samples.c - the UI feedback samples, PRE-COMPUTED and in FLASH.
  *
- * Constants in Flash (like ui_lock_*.c): no RAM; the I2S DMA reads them da qui.
+ * Constants in Flash (like ui_lock_*.c): no RAM; the I2S DMA reads them here.
  * FORMAT: interleaved STEREO (L,R,L,R,...). The six basic sounds have L=R
  * (synthesised mono and duplicated); boot/affirm/deny are WAV files supplied
  * by the user, already stereo (L and R may differ). 16 kHz, 16-bit.
@@ -12,7 +12,7 @@
 
 
 
-/* click: sintetizzato, 192 int16 stereo (L=R) */
+/* click: synthesised, 192 int16 stereo (L=R) */
 const int16_t audio_smp_click[192] = {
          0,     0,  15945, 15945,  19660, 19660,   9872,  9872,  -5542, -5542, -15729,-15729,
     -14400,-14400,  -3581, -3581,   8559,  8559,  13781, 13781,   9278,  9278,   -977,  -977,
@@ -696,7 +696,7 @@ const int16_t audio_smp_lock_off[3504] = {
 };
 const uint32_t audio_smp_lock_off_len = 3504;
 
-/* reject: sintetizzato, 2240 int16 stereo (L=R) */
+/* reject: synthesised, 2240 int16 stereo (L=R) */
 const int16_t audio_smp_reject[2240] = {
          0,     0,      7,     7,     57,    57,    188,   188,    431,   431,    804,   804,
       1313,  1313,   1949,  1949,   2692,  2692,   3507,  3507,   4355,  4355,   5188,  5188,
@@ -3921,7 +3921,7 @@ const int16_t audio_smp_beep_down[5200] = {
 };
 const uint32_t audio_smp_beep_down_len = 5200;
 
-/* nav_beep: navigation beep (user-supplied, 24->16bit, 0.50 FS, fade-in nativo). 953 frame, 60ms */
+/* nav_beep: navigation beep (user-supplied, 24->16bit, 0.50 FS, native fade-in). 953 frames, 60ms */
 const int16_t audio_smp_nav_beep[1906] = {
         73,    73,    65,    65,   328,   328,  -172,  -172,  -566,  -566,   610,   610,
       -987,  -987,  5270,  5270, -5114, -5114, -5515, -5515,  4201,  4201, -2128, -2128,

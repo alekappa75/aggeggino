@@ -683,7 +683,7 @@ static void build_signal_bars(lv_obj_t *p, int x, int y)
     for (int i = 0; i < 4; i++) {
         int h  = STRIP_H - (3 - i) * BAR_STEP;   /* the last is as tall as the badge */
         int bx = x + i * (BAR_W + BAR_SP);
-        int by = y + (STRIP_H - h);              /* allineate in basso */
+        int by = y + (STRIP_H - h);              /* bottom-aligned */
         s_sig_bars[i] = rect(p, bx, by, BAR_W, h,
                              C_BADGEGREY, LV_OPA_COVER, C_BADGEGREY, 0, 1);
     }
@@ -1864,13 +1864,13 @@ static void build_dashboard(void)
     s_tr_arrow = label(s_tr, 0, 0, LV_SYMBOL_UP, &lv_font_montserrat_20, C_DIMTXT);
     lv_obj_center(s_tr_arrow);
 
-    /* BPM gigante condiviso */
+    /* the shared giant BPM */
     s_bpm_big = label(scr, 0, 0, "128.0", &lv_font_montserrat_48, C_WHITE);
     lv_obj_align(s_bpm_big, LV_ALIGN_TOP_MID, 0, 80);
     s_bpm_lbl = label(scr, 0, 0, "BPM", &lv_font_montserrat_12, C_MUTED);
     lv_obj_align(s_bpm_lbl, LV_ALIGN_TOP_MID, 0, 132);
 
-    /* due BPM grigi (sync OFF), nascosti di default */
+    /* the two grey BPMs (sync OFF), hidden by default */
     s_bpm_dj = label(scr, 0, 0, "128.0", &lv_font_montserrat_20, C_GREY);
     lv_obj_align(s_bpm_dj, LV_ALIGN_TOP_MID, -62, 92);
     s_bpm_link = label(scr, 0, 0, "124.5", &lv_font_montserrat_20, C_GREY);
@@ -2006,7 +2006,7 @@ static void build_dashboard(void)
     }
 }
 
-/* --- flush del display: serializzato col W5500 via semaforo BSP ---
+/* --- display flush: serialised with the W5500 through the BSP semaphore ---
  * The flush is an asynchronous DMA. The semaphore is taken before starting and
  * released (from the ISR) when the DMA ends, in on_flush_done: that way the
  * W5500 cannot touch the bus while the display is transferring. */
@@ -2139,7 +2139,7 @@ esp_err_t ui_init(void)
     if (!b1 || !b2) { lvgl_port_unlock(); ESP_LOGE(TAG, "draw buffer alloc"); return ESP_ERR_NO_MEM; }
     lv_display_set_buffers(s_disp, b1, b2, bufsz, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
-    /* callback di fine-DMA: rilascia il semaforo e segnala flush pronto */
+    /* end-of-DMA callback: releases the semaphore and signals flush done */
     const esp_lcd_panel_io_callbacks_t io_cbs = { .on_color_trans_done = on_flush_done };
     esp_lcd_panel_io_register_event_callbacks(io, &io_cbs, s_disp);
 
@@ -2165,6 +2165,6 @@ esp_err_t ui_init(void)
     lv_timer_create(buttons_timer, 40, NULL);       /* screen-printed keys ~25Hz */
     lvgl_port_unlock();
 
-    ESP_LOGI(TAG, "dashboard viva (refresh 20Hz, toggle interattivo)");
+    ESP_LOGI(TAG, "dashboard live (refresh 20Hz, interactive toggles)");
     return ESP_OK;
 }

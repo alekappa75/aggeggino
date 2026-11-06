@@ -68,11 +68,11 @@ void bsp_i2c_scan(void)
     for (uint8_t a = 0x03; a < 0x78; a++) {
         esp_err_t r = i2c_master_probe(s_i2c_bus, a, 50);
         if (r == ESP_OK) {
-            ESP_LOGI(TAG, "  i2c 0x%02x: presente (ACK)", a);
+            ESP_LOGI(TAG, "  i2c 0x%02x: present (ACK)", a);
             found++;
         }
     }
-    ESP_LOGI(TAG, "i2c scan: %d device trovati", found);
+    ESP_LOGI(TAG, "i2c scan: %d devices found", found);
 }
 
 /* ---------- PMIC and IO expander ---------- */

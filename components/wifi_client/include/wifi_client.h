@@ -42,8 +42,8 @@ typedef enum {
     WIFI_FAIL_OTHER,      /* some other reason                           */
 } wifi_client_fail_t;
 
-/* Outcome of the last attempt. Cleared on every new connection requestnessione
- * and when the connection succeeds. */
+/* Outcome of the last attempt. Cleared on every new connection request and
+ * when the connection succeeds. */
 wifi_client_fail_t wifi_client_last_fail(void);
 
 /* ---- lifecycle ---- */

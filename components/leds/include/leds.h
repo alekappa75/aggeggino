@@ -1,7 +1,8 @@
 /*
- * leds.h — striscia WS2812C del M5GO Bottom3 (10 LED su GPIO5, da schematico).
- * Driven over RMT (the espressif/led_strip component). Future plan: userli come
- * them as at-a-glance status indicators (green=Link, blue=AP only, red=W5500 KO).
+ * leds.h - the M5GO Bottom3's WS2812C strip (10 LEDs on GPIO5, per the
+ * schematic). Driven over RMT (the espressif/led_strip component), and used as
+ * at-a-glance status indicators: see djlink_led_state() and
+ * ableton_led_state() in main.c for what each colour means.
  */
 #pragma once
 #include "esp_err.h"

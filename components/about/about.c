@@ -419,7 +419,7 @@ static void slide_init(void)
         int px = 0;
         for (int i = 0; i < SL_LINES; i++) px += s_sl_m[i].w * s_sl_m[i].h;
         ESP_LOGI(TAG, "masks: %d lines, %d pixels, %lld us in all | "
-                      "heap interno %u", SL_LINES, px, tb - ta,
+                      "internal heap %u", SL_LINES, px, tb - ta,
                  (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
     }
 }
@@ -1263,11 +1263,11 @@ fine:
      * whether the animation fitted its budget, and in production they are
      * five lines on the serial port that nobody reads. */
     if (frames) {
-        static const char *const PH_NOME[PH_N] = { "testo", "rivelazione", "fermo" };
+        static const char *const PH_NAME[PH_N] = { "text", "reveal", "still" };
         for (int i = 0; i < PH_N; i++)
             if (ph_f[i])
-                ESP_LOGW(TAG, "about | %-11s %4d f | %5lld us/f su %d disponibili",
-                         PH_NOME[i], ph_f[i],
+                ESP_LOGW(TAG, "about | %-11s %4d f | %5lld us/f out of %d available",
+                         PH_NAME[i], ph_f[i],
                          ph_us[i] / ph_f[i], FX_FPS_MS * 1000);
 
 /* The transfer, measured where it happens: taken anywhere else the time lands

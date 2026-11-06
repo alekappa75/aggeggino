@@ -269,18 +269,18 @@ static bool autoip_taken(const uint8_t ip[4])
     return true;                          /* neither way worked: assume taken */
 }
 
-static bool autoip_run(const uint8_t mac[6], uint8_t scelto[4])
+static bool autoip_run(const uint8_t mac[6], uint8_t chosen[4])
 {
     const uint8_t rcr = getRCR();
     setRCR(AUTOIP_RCR);                    /* a slow probe would delay boot */
 
     bool ok = false;
     for (int n = 0; n < AUTOIP_TRIES && !ok; n++) {
-        autoip_candidate(mac, n, scelto);
+        autoip_candidate(mac, n, chosen);
 
-        if (autoip_taken(scelto)) {
+        if (autoip_taken(chosen)) {
             ESP_LOGW(TAG, "auto-ip: %u.%u.%u.%u is taken, trying another",
-                     scelto[0], scelto[1], scelto[2], scelto[3]);
+                     chosen[0], chosen[1], chosen[2], chosen[3]);
             continue;
         }
         ok = true;
@@ -973,7 +973,7 @@ int32_t w5500_net_sendto_fast(uint8_t sn, const uint8_t *buf, size_t len,
                        (uint8_t)(port >> 8), (uint8_t)port };
     WIZCHIP_WRITE_BUF(Sn_DIPR(sn), dst, 6);
 
-    /* (4) payload nel ring di trasmissione: il wrap lo gestisce il chip */
+    /* (4) payload into the transmit ring: the chip handles the wrap */
     WIZCHIP_WRITE_BUF(((uint32_t)wr << 8) + (WIZCHIP_TXBUF_BLOCK(sn) << 3),
                       (uint8_t *)buf, (uint16_t)len);
 
@@ -1043,7 +1043,7 @@ int w5500_net_tcp_listen(uint8_t sn, uint16_t port)
     close(sn);
     int8_t r = socket(sn, Sn_MR_TCP, port, 0);
     if (r != (int8_t)sn) {
-        ESP_LOGE(TAG, "tcp_listen: socket() sn=%u -> %d (atteso %u)", sn, (int)r, sn);
+        ESP_LOGE(TAG, "tcp_listen: socket() sn=%u -> %d (expected %u)", sn, (int)r, sn);
         return -1;
     }
     int8_t l = listen(sn);
@@ -1101,7 +1101,7 @@ int32_t w5500_net_tcp_poll(uint8_t sn, uint8_t *buf, size_t maxlen, uint8_t from
         }
     } else if (st == SOCK_CLOSE_WAIT) {
         disconnect(sn);
-        out = -2;                      /* il peer ha chiuso */
+        out = -2;                      /* the peer closed */
     }
     bus_group_end();
     return out;
@@ -1133,7 +1133,7 @@ int32_t w5500_net_tcp_send(uint8_t sn, const uint8_t *buf, size_t len)
 void w5500_net_tcp_close(uint8_t sn, uint16_t port)
 {
     close(sn);
-    w5500_net_tcp_listen(sn, port);    /* torna in ascolto */
+    w5500_net_tcp_listen(sn, port);    /* back to listening */
 }
 
 /* ---------- TCP client (we query a player's dbserver) ---------- */
@@ -1147,7 +1147,7 @@ int w5500_net_tcp_connect(uint8_t sn, const uint8_t ip[4], uint16_t port)
         return -1;
     }
     uint8_t addr[4] = { ip[0], ip[1], ip[2], ip[3] };
-    int8_t r = connect(sn, addr, port);          /* bloccante fino a result */
+    int8_t r = connect(sn, addr, port);          /* blocks until the result */
     if (r != SOCK_OK) {
         ESP_LOGE(TAG, "tcp_connect: connect() -> %d", (int)r);
         close(sn);
@@ -1190,7 +1190,7 @@ int w5500_net_tcp_connect_start(uint8_t sn, const uint8_t ip[4], uint16_t port)
         return -1;
     }
     uint8_t addr[4] = { ip[0], ip[1], ip[2], ip[3] };
-    int8_t r = connect(sn, addr, port);      /* non bloccante: torna SOCK_BUSY */
+    int8_t r = connect(sn, addr, port);      /* non-blocking: returns SOCK_BUSY */
     if (r != SOCK_OK && r != SOCK_BUSY) {
         close(sn);
         return -2;
@@ -1245,7 +1245,7 @@ void w5500_net_int_disable(void)
 uint8_t w5500_net_int_ack(uint8_t sn)
 {
     uint8_t ir = getSn_IR(sn);
-    if (ir & Sn_IR_RECV) setSn_IR(sn, Sn_IR_RECV);   /* scrivere 1 azzera */
+    if (ir & Sn_IR_RECV) setSn_IR(sn, Sn_IR_RECV);   /* writing 1 clears it */
     return ir;
 }
 

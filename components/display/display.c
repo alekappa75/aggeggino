@@ -404,7 +404,7 @@ static lv_draw_buf_t *s_glyph_buf = NULL;
  * The caller remains responsible for lv_font_glyph_release_draw_data(). */
 static const uint8_t *glyph_a8(lv_font_glyph_dsc_t *g, uint32_t *stride)
 {
-    if (g->box_w <= 0 || g->box_h <= 0) return NULL;          /* spazio */
+    if (g->box_w <= 0 || g->box_h <= 0) return NULL;          /* a space */
     if (g->box_w > GLYPH_BUF_DIM || g->box_h > GLYPH_BUF_DIM) return NULL;
 
     if (!s_glyph_buf) {

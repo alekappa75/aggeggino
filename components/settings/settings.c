@@ -139,7 +139,7 @@ esp_err_t settings_init(void)
 {
     esp_err_t e = nvs_flash_init();
     if (e == ESP_ERR_NVS_NO_FREE_PAGES || e == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_LOGW(TAG, "NVS da riformattare");
+        ESP_LOGW(TAG, "NVS needs reformatting");
         nvs_flash_erase();
         e = nvs_flash_init();
     }

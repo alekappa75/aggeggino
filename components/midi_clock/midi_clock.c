@@ -300,7 +300,7 @@ esp_err_t midi_clock_start(const midi_clock_config_t *cfg)
         return ESP_ERR_NO_MEM;
     }
 
-    ESP_LOGI(TAG, "motore avviato (core %d, prio %d, %d PPQN)",
+    ESP_LOGI(TAG, "engine started (core %d, prio %d, %d PPQN)",
              cfg->core_id, prio, MIDI_CLOCK_PPQN);
     schedule_next(esp_timer_get_time());
     return ESP_OK;

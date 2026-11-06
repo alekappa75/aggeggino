@@ -1882,7 +1882,7 @@ static void pw_reject_timeout_cb(lv_timer_t *t)
 {
     (void)t;
     s_pw_reject = false;
-    s_pw_reject_timer = NULL;      /* one-shot: LVGL lo cancella da se' */
+    s_pw_reject_timer = NULL;      /* one-shot: LVGL deletes it itself */
     pw_render();
 }
 
@@ -1894,7 +1894,7 @@ static void pw_reject(const char *why)
     s_pw_reject_timer = lv_timer_create(pw_reject_timeout_cb, TE_REJECT_MS, NULL);
     lv_timer_set_repeat_count(s_pw_reject_timer, 1);
     audio_play(AUDIO_REJECT);      /* with sound off, the colour remains */
-    if (why) te_error_show(why);   /* te_error_show ridisegna da se' */
+    if (why) te_error_show(why);   /* te_error_show redraws by itself */
     else     pw_render();
 }
 
@@ -2887,13 +2887,13 @@ static void activate_item(int visible_row)
      * in either direction. It is then the two settings that decide which
      * transitions cross the channel. */
     if (id == SCR_BRIDGE_OSC) {
-        if (idx == 0) {                       /* Enabled: commuta */
+        if (idx == 0) {                       /* Enabled: toggles */
             settings_set_osc_enabled(!settings_get_osc_enabled());
             audio_play(AUDIO_NAV_BEEP);
             render();
             return;
         }
-        if (idx == 1) {                       /* Preset: cicla */
+        if (idx == 1) {                       /* Preset: cycles */
             uint8_t pr = (uint8_t)((settings_get_osc_preset() + 1) % OSC_PRESET_COUNT);
             settings_set_osc_preset(pr);
             audio_play(AUDIO_NAV_BEEP);
