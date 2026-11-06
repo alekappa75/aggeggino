@@ -1,0 +1,27 @@
+# =============================================================================
+# DEVELOPMENT build — selected by DJB_DEVELOPER=1 in the top-level CMakeLists
+# =============================================================================
+#
+# Not to be edited by hand alongside its .prod twin: change DJB_DEVELOPER and
+# CMake picks the file. Keeping the two aligned by hand is exactly the mistake
+# this split exists to make impossible.
+#
+# REMEMBER: sdkconfig is generated once and then kept. After changing
+# DJB_DEVELOPER it must be deleted (or 'idf.py fullclean'), or the build uses
+# the previous configuration.
+
+# --- Logs --------------------------------------------------------------------
+# At INFO everything is compiled, ESP_LOGI included. Those are the lines that
+# tell what the bridge is doing: useful on the bench, costly in the venue —
+# each one blocks its caller for about 9 ms on the UART.
+CONFIG_LOG_DEFAULT_LEVEL_INFO=y
+
+# --- Per-core metrics --------------------------------------------------------
+# They feed the [cpu] and [stack] lines of the heartbeat.
+#
+# MIND THIS: GENERATE_RUN_TIME_STATS makes FreeRTOS accumulate statistics at
+# EVERY context switch — thousands per second, across two cores. It is
+# continuous overhead, not occasional, and it is there even when nobody is
+# looking at the metrics.
+CONFIG_FREERTOS_USE_TRACE_FACILITY=y
+CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y

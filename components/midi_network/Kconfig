@@ -1,0 +1,29 @@
+menu "Network MIDI 2.0 (UMP over UDP)"
+
+    config MIDI2_NET_RETX_RING
+        int "Retransmit/FEC ring depth (UMP Data commands per session)"
+        range 2 64
+        default 16
+        help
+            Number of recently sent UMP Data commands retained per session for
+            Forward Error Correction and to answer Retransmit Requests. Each
+            slot costs MIDI2_NET_RETX_MAX_WORDS*4 + a few bytes.
+
+    config MIDI2_NET_RETX_MAX_WORDS
+        int "Max 32-bit words retained per UMP Data command"
+        range 4 64
+        default 16
+        help
+            UMP Data commands larger than this are not kept in the retransmit
+            ring (a Retransmit Request for them yields a Retransmit Error).
+            16 words covers any single channel-voice/SysEx7 message comfortably.
+
+    config MIDI2_NET_TX_QUEUE_LEN
+        int "Outgoing UMP queue depth"
+        range 1 128
+        default 16
+        help
+            Depth of the queue between the application and the transport task.
+            When full, midi2_net_host_send_ump() drops (UDP semantics).
+
+endmenu

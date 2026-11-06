@@ -1,0 +1,22 @@
+# =============================================================================
+# PRODUCTION build — selected by DJB_DEVELOPER=0 in the top-level CMakeLists
+# =============================================================================
+#
+# See sdkconfig.defaults.dev for the twin and for the warning about sdkconfig,
+# which must be deleted after changing DJB_DEVELOPER.
+
+# --- Logs --------------------------------------------------------------------
+# At WARN the warnings and errors remain. And since the MAXIMUM COMPILED level
+# follows the default one, the project's 132 ESP_LOGI calls are not even
+# generated: this is not runtime silencing but code leaving the binary.
+#
+# THE ERRORS STAY, deliberately: a fault that leaves no trace is a fault that
+# comes back in the venue with nothing to look at.
+CONFIG_LOG_DEFAULT_LEVEL_WARN=y
+
+# --- Per-core metrics --------------------------------------------------------
+# Off, and with them the accumulation of statistics at every context switch.
+# The code that reads them leaves with DJB_DEVELOPER: what is removed here is
+# what feeds them, which is the part that costs even when nobody is looking.
+CONFIG_FREERTOS_USE_TRACE_FACILITY=n
+CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=n

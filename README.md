@@ -95,11 +95,35 @@ is worth more than an invented certainty.
 
 ## Building
 
+Built with ESP-IDF 5.5.4.
+
 ```
 idf.py set-target esp32s3
 idf.py build
 idf.py -p <PORT> flash monitor
 ```
+
+Managed dependencies (LVGL, `esp_abl_link`, the ILI9341 driver, TinyUSB, mDNS)
+are pulled in by the component manager from the `idf_component.yml` manifests.
+WIZnet's ioLibrary is committed rather than fetched, and
+[`components/w5500_net/VENDORED.md`](components/w5500_net/VENDORED.md) explains
+why: this code works around a defect in the library's own `recv()`, so the
+revision matters.
+
+### The development build
+
+`DJB_DEVELOPER` in the top-level `CMakeLists.txt` is **0** here, which is the
+production build. At 1 it adds the Developer page in the settings, screenshots
+to the SD card, and the CPU / SPI-bus / beat-jitter / stack metrics, together
+with the FreeRTOS instrumentation that feeds them.
+
+Two things worth knowing before switching it on. The instrumentation costs work
+at **every context switch**, so phase figures measured with it are not the
+figures of the firmware people run — measure on a production build. And
+`sdkconfig` is generated once and then kept, so after changing the switch you
+have to delete `sdkconfig` (or run `idf.py fullclean`) for the new defaults to
+be read; otherwise the build silently keeps the old configuration and the switch
+appears to do nothing.
 
 ## The name
 

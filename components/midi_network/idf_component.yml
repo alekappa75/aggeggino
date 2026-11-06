@@ -1,0 +1,17 @@
+version: "0.3.0"
+description: >-
+  Network MIDI 2.0 (UDP) transport for ESP-IDF. Implements the MIDI Association
+  "User Datagram Protocol for Universal MIDI Packets" (M2-124-UM) Host role:
+  advertises a _midi2._udp service over mDNS and exchanges Universal MIDI
+  Packets with Clients such as macOS "MIDI UMP". Target-agnostic (any ESP-IDF
+  chip with a network interface).
+url: "https://github.com/DatanoiseTV/midi2-ump-net-esp-idf"
+tags:
+  - midi
+  - midi2
+  - ump
+  - network-midi
+  - audio
+dependencies:
+  idf: ">=5.1"
+  espressif/mdns: ">=1.0.0"

@@ -1,0 +1,3 @@
+## Managed dependencies of the display component
+dependencies:
+  espressif/esp_lcd_ili9341: "^2"   # ILI9341 driver (used for the CoreS3's ILI9342C panel)

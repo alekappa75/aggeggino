@@ -1,0 +1,161 @@
+# === Target ===
+CONFIG_IDF_TARGET="esp32s3"
+
+# === CoreS3 SE: 16MB flash + 8MB quad PSRAM ===
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_QUAD=y
+CONFIG_SPIRAM_SPEED_80M=y
+
+# === Shared-SPI race mitigation (key for M0) ===
+CONFIG_SPI_MASTER_IN_IRAM=y
+CONFIG_SPI_MASTER_ISR_IN_IRAM=y
+
+# === 1 ms tick for finer timing ===
+CONFIG_FREERTOS_HZ=1000
+
+# === Main task stack (the display allocates buffers) ===
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+
+# === Custom partition table (large app) ===
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+
+# === Log ===
+# The log level lives in the .dev / .prod files: in production it drops to WARN,
+# and since the MAXIMUM COMPILED level follows the default one, the ESP_LOGI
+# calls leave the binary instead of being merely silenced.
+
+# === Task affinity ===
+#
+# The WiFi driver stays on CORE 0 (the ESP-IDF default). Moving it to core 1 was
+# TRIED and MEASURED, and it is not worth it:
+#
+#   - the expected benefit is absent. The idea was that beat_tx (prio 23) lost
+#     time alternating with the WiFi driver (also 23, same core) in 1 ms
+#     slices. But with WiFi moved, the gap between task wake-up and the beat's
+#     actual departure stayed identical: 2073, 2213, 2092 us before, 2262, 2316,
+#     2395 after. The delay is ELSEWHERE - inside the ioLibrary's sendto, which
+#     waits for SEND_OK with a busy-poll of about a hundred SPI transactions;
+#   - the cost, on the other hand, is real. In SoftAP (a beacon every 100 ms
+#     plus the DHCP server) the driver at priority 23 on core 1 outranks
+#     midi_clk (9) and osc_tx (10): the MIDI wake-up queue went from ~3.4 ms to
+#     ~5.5 ms, and core 1 from 10% to 13%. In client mode with no network the
+#     radio was nearly idle and the effect invisible - test with it ACTIVE.
+#
+# The split "core 0 = wired real-time, core 1 = radio and interface" remains
+# conceptually right, but it is to be pursued by keeping transactions short,
+# not by moving the driver.
+
+# === MIDI su USB-C (TinyUSB) ===
+#
+# Without this line the component builds but the MIDI class does not exist:
+# TINYUSB_MIDI_COUNT defaults to 0, and "0 means disabled".
+CONFIG_TINYUSB_MIDI_COUNT=1
+#
+# The USB-Serial-JTAG console can NOT coexist with TinyUSB, which claims the
+# peripheral. It must be removed EXPLICITLY: leaving it would give a conflict
+# at start-up instead of a clear build error.
+# The log stays on Port B (see below), which is exactly why that console was
+# set up before taking this step.
+# CONFIG_ESP_CONSOLE_SECONDARY_USB_SERIAL_JTAG is not set
+CONFIG_ESP_CONSOLE_SECONDARY_NONE=y
+
+# === Debug console on Port B (G8/G9) ===
+#
+# WHY: once USB-C goes to TinyUSB for class-compliant MIDI, the USB-Serial-JTAG
+# console disappears. A physical serial channel is therefore needed, proven
+# BEFORE that step and not after - otherwise the first USB problem would have
+# to be diagnosed blind.
+#
+# The primary one moves from the default pins (GPIO43/44, on the M-Bus, under
+# the stack) to Port B, a Grove connector reachable with a lead.
+# The USB SECONDARY stays on: while USB is free everything is still visible on
+# COM4 as always, so a wiring or pin mistake does not leave one blind - nothing
+# simply arrives on Port B, and the two GPIOs get swapped.
+#
+# UART0, not UART1: UART1 belongs to MIDI DIN on Port C.
+#
+# PINS: the M5Stack library calls begin(&Serial2, MIDI_BAUD, 16, 17) for the
+# base Core's Port C, that is RX on the lower GPIO and TX on the higher. By
+# analogy on Port B (G8/G9): G8=RX, G9=TX. That is an INFERENCE, not a figure
+# read anywhere: if nothing arrives on Port B, the first thing to try is
+# swapping these two numbers.
+#
+# BAUD: stays 115200. The field only becomes editable by choosing Custom UART,
+# and PM_ENABLE is off so there are no accuracy constraints - but raising it is
+# a separate decision, to be taken after checking that the channel works.
+# (A heartbeat block is ~1970 characters: 171 ms at 115200,
+# 43 ms at 460800 - it shows in the occasional keep-alive gaps.)
+CONFIG_ESP_CONSOLE_UART_CUSTOM=y
+CONFIG_ESP_CONSOLE_UART_CUSTOM_NUM_0=y
+CONFIG_ESP_CONSOLE_UART_TX_GPIO=9
+CONFIG_ESP_CONSOLE_UART_RX_GPIO=8
+CONFIG_ESP_CONSOLE_UART_BAUDRATE=115200
+
+# === lwIP socket budget ===
+#
+# The ESP-IDF default is 10, and the count says 7-9 are needed:
+#   OSC 1 | Ableton Link 2-3 | midi_network 2 (servizio + wake) | mDNS 1-2 |
+#   DHCP server in SoftAP 1
+#
+# The limit is genuinely reached. Observed symptom: switching the network MIDI
+# output off and on from the menu made socket() fail and midi2_net_host_start()
+# return ESP_FAIL - "start failed" repeated endlessly, the MIDI badge red and
+# no clue as to the cause, because a socket() that fails prints nothing.
+# 16 is the maximum allowed and costs about a kilobyte.
+CONFIG_LWIP_MAX_SOCKETS=16
+
+# === Network MIDI 2.0 (the midi2_net component + mDNS) ===
+#
+# mDNS creates a TASK OF ITS OWN, and it belongs away from core 0 - though not
+# for the reason one would expect. It does NOT announce continuously over
+# multicast: on registering the service it sends a few announcements and then
+# falls silent, only ANSWERING queries (RFC 6762). The traffic itself is small.
+#
+# The problem is the PRIORITY. MDNS_TASK_PRIORITY defaults to 1, and ESP-IDF's
+# main task also runs at 1: on the same core they would alternate in 1 ms
+# slices, which is exactly the mechanism that cost days of investigation into
+# beat_tx against the WiFi driver. The main loop is what polls the W5500's
+# sockets and transmits the status packets: it must share the scheduler with
+# nobody.
+#
+# Add that the task wakes every MDNS_TIMER_PERIOD_MS anyway (100 ms by default)
+# and that in client mode it receives ALL the segment's multicast traffic - on
+# a network with Apple devices that is not little.
+CONFIG_MDNS_TASK_AFFINITY_CPU1=y
+#
+# The component's defaults are sized for streams of NOTES. We send one word at
+# a time (a 32-bit System Real Time), so rings and queues can be far shorter:
+# they are worth ~7 KB of internal RAM, which on this project is the scarce
+# resource.
+CONFIG_MIDI2_NET_RETX_RING=2
+CONFIG_MIDI2_NET_RETX_MAX_WORDS=4
+CONFIG_MIDI2_NET_TX_QUEUE_LEN=4
+
+# === Ableton Link (esp_abl_link / ASIO) ===
+CONFIG_COMPILER_CXX_EXCEPTIONS=y
+CONFIG_PTHREAD_TASK_STACK_SIZE_DEFAULT=4096
+# Link's task on CORE 1. The component defaults to -1 (no affinity), and its
+# own README recommends 1 "to avoid contention with WiFi", which on ESP-IDF
+# runs pinned to core 0.
+#
+# IT IS HERE, AND NOT IN menuconfig, FOR A REASON. It had already been set once
+# from menuconfig, which writes only `sdkconfig` - and `idf.py set-target`
+# regenerates sdkconfig from this file, so the setting was lost silently,
+# reverting to -1 with nothing to say so. Every configuration choice that must
+# survive belongs here.
+# (`idf.py fullclean`, by contrast, does NOT touch sdkconfig: it only wipes build/.)
+CONFIG_LINK_ESP_TASK_CORE_ID=1
+
+# === LVGL / UI ===
+CONFIG_LV_COLOR_DEPTH_16=y
+CONFIG_LV_FONT_MONTSERRAT_12=y
+CONFIG_LV_FONT_MONTSERRAT_16=y
+CONFIG_LV_FONT_MONTSERRAT_20=y
+CONFIG_LV_FONT_MONTSERRAT_48=y
+
+# === Per-core CPU metrics ===
+# Moved to sdkconfig.defaults.dev / .prod: DJB_DEVELOPER in the top-level
+# CMakeLists chooses them, together with the define that enables the code
+# reading them. Keeping them here meant they could drift apart silently.
