@@ -13,6 +13,8 @@ MIDI, USB-MIDI, CV and OSC outputs.**
 
 ## What it does
 
+![How AGGEGGINO sits between the two networks](docs/img/networks.svg)
+
 AGGEGGINO lets Pioneer CDJ/XDJ players and Ableton Link software share a single
 timeline, in both directions. It joins the DJ Link network over wired Ethernet
 and the Ableton Link session over WiFi — the two protocols normally live on

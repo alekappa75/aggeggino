@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 430" width="880" height="430"
+     role="img" aria-label="Pioneer players sit on wired Ethernet speaking Pro DJ Link; Ableton Live and Push sit on WiFi speaking Ableton Link. AGGEGGINO is on both networks at once and carries tempo and phase in either direction, and also emits MIDI clock, CV pulses and OSC.">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8A9098"/>
+    </marker>
+    <marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#EFA02A"/>
+    </marker>
+    <marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2DD4D4"/>
+    </marker>
+  </defs>
+
+  <rect width="880" height="430" rx="10" fill="#0E1116"/>
+
+  <!-- ===== network panels ===== -->
+  <rect x="24" y="52" width="250" height="196" rx="8" fill="#151A21" stroke="#242A32"/>
+  <rect x="606" y="52" width="250" height="196" rx="8" fill="#151A21" stroke="#242A32"/>
+
+  <text x="40" y="78" font-family="system-ui,sans-serif" font-size="12" font-weight="600"
+        letter-spacing="1.2" fill="#EFA02A">WIRED ETHERNET</text>
+  <text x="40" y="95" font-family="system-ui,sans-serif" font-size="11" fill="#565E68">Pro DJ Link</text>
+
+  <text x="840" y="78" text-anchor="end" font-family="system-ui,sans-serif" font-size="12"
+        font-weight="600" letter-spacing="1.2" fill="#2DD4D4">WiFi</text>
+  <text x="840" y="95" text-anchor="end" font-family="system-ui,sans-serif" font-size="11"
+        fill="#565E68">Ableton Link</text>
+
+  <!-- players -->
+  <rect x="44" y="118" width="210" height="46" rx="6" fill="#0E1116" stroke="#3C444E"/>
+  <text x="149" y="147" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13"
+        fill="#FFFFFF">CDJ / XDJ player</text>
+  <rect x="44" y="178" width="210" height="46" rx="6" fill="#0E1116" stroke="#3C444E"/>
+  <text x="149" y="207" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13"
+        fill="#FFFFFF">CDJ / XDJ player</text>
+
+  <!-- link peers -->
+  <rect x="626" y="118" width="210" height="46" rx="6" fill="#0E1116" stroke="#3C444E"/>
+  <text x="731" y="147" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13"
+        fill="#FFFFFF">Ableton Live</text>
+  <rect x="626" y="178" width="210" height="46" rx="6" fill="#0E1116" stroke="#3C444E"/>
+  <text x="731" y="207" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13"
+        fill="#FFFFFF">Push 3 standalone</text>
+
+  <!-- ===== the bridge ===== -->
+  <rect x="330" y="104" width="220" height="92" rx="8" fill="#123C42" stroke="#2DD4D4" stroke-width="2"/>
+  <text x="440" y="140" text-anchor="middle" font-family="system-ui,sans-serif" font-size="18"
+        font-weight="700" letter-spacing="1.5" fill="#FFFFFF">AGGEGGINO</text>
+  <text x="440" y="162" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11"
+        fill="#8A9098">on both networks at once</text>
+  <text x="440" y="180" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11"
+        fill="#565E68">ESP32-S3 + W5500</text>
+
+  <!-- ===== bidirectional arrows ===== -->
+  <line x1="276" y1="134" x2="326" y2="134" stroke="#EFA02A" stroke-width="2"
+        marker-end="url(#am)" marker-start="url(#am)"/>
+  <line x1="554" y1="134" x2="604" y2="134" stroke="#2DD4D4" stroke-width="2"
+        marker-end="url(#ac)" marker-start="url(#ac)"/>
+
+  <text x="301" y="124" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10"
+        fill="#EFA02A">tempo</text>
+  <text x="301" y="158" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10"
+        fill="#EFA02A">+ phase</text>
+  <text x="579" y="124" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10"
+        fill="#2DD4D4">tempo</text>
+  <text x="579" y="158" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10"
+        fill="#2DD4D4">+ phase</text>
+
+  <!-- the point: the two networks do not touch -->
+  <line x1="440" y1="54" x2="440" y2="96" stroke="#3C444E" stroke-width="1" stroke-dasharray="3 4"/>
+  <text x="440" y="40" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11"
+        fill="#8A9098">two separate networks — they never see each other</text>
+
+  <!-- ===== outputs ===== -->
+  <line x1="440" y1="200" x2="440" y2="286" stroke="#8A9098" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="180" y1="286" x2="700" y2="286" stroke="#8A9098" stroke-width="1.5"/>
+  <line x1="180" y1="286" x2="180" y2="322" stroke="#8A9098" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="353" y1="286" x2="353" y2="322" stroke="#8A9098" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="527" y1="286" x2="527" y2="322" stroke="#8A9098" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="700" y1="286" x2="700" y2="322" stroke="#8A9098" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <text x="455" y="248" font-family="system-ui,sans-serif" font-size="10" fill="#8A9098">
+    the same timeline, out again as</text>
+
+  <rect x="104" y="326" width="152" height="54" rx="6" fill="#151A21" stroke="#242A32"/>
+  <text x="180" y="350" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#FFFFFF">MIDI clock</text>
+  <text x="180" y="368" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#565E68">DIN · USB-C · network</text>
+
+  <rect x="277" y="326" width="152" height="54" rx="6" fill="#151A21" stroke="#242A32"/>
+  <text x="353" y="350" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#FFFFFF">CV pulses</text>
+  <text x="353" y="368" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#565E68">1 / 2 / 4 / 24 PPQN</text>
+
+  <rect x="451" y="326" width="152" height="54" rx="6" fill="#151A21" stroke="#242A32"/>
+  <text x="527" y="350" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#FFFFFF">OSC</text>
+  <text x="527" y="368" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#565E68">generic · Resolume · custom</text>
+
+  <rect x="624" y="326" width="152" height="54" rx="6" fill="#151A21" stroke="#242A32"/>
+  <text x="700" y="350" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#FFFFFF">playlist</text>
+  <text x="700" y="368" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#565E68">CSV on the SD card</text>
+
+  <text x="440" y="408" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10"
+        fill="#565E68">Either side can lead. The arrows run both ways because the bridge does.</text>
+</svg>
