@@ -1809,12 +1809,28 @@ static void build_dashboard(void)
     lv_obj_remove_flag(scr, LV_OBJ_FLAG_SCROLLABLE);
 
     /* TRACK on the master: title and artist, alternating every 3 s.
-     * Width 280: the padlock begins at x=292, so we stop short of it with a
-     * margin. Truncation with dots (LONG_DOT) rather than scrolling: a
-     * continuous scroll would cost cycles on a core already contended by the
-     * SPI bus, and the flourish would not be worth it. */
+     * TRACK_W stops the line short of the padlock, see the define. Truncation
+     * with dots (LONG_DOT) rather than scrolling: a continuous scroll would
+     * cost cycles on a core already contended by the SPI bus, and the flourish
+     * would not be worth it. */
     s_track = label(scr, 8, 4, "", &lv_font_montserrat_12, C_MUTED);
     lv_obj_set_width(s_track, TRACK_W);
+
+    /* THE HEIGHT HAS TO BE FIXED TOO, at exactly one line.
+     *
+     * A label's height defaults to LV_SIZE_CONTENT, and LONG_DOT writes its
+     * dots at the bottom right OF THE LABEL'S BOX. With a box free to grow
+     * there is nothing for the text to overflow: a title or an artist longer
+     * than the line wraps to a second one, the label expands downward, and it
+     * lands on the DJ LINK caption underneath.
+     *
+     * Constraining the height is what turns that wrap back into an ellipsis.
+     * Setting the width alone is not enough, which is the trap: the line looks
+     * right for every name short enough to fit, and only a long one shows it.
+     *
+     * Taken from the font rather than written as a number, so that changing
+     * the font here cannot leave a stale height behind. */
+    lv_obj_set_height(s_track, lv_font_get_line_height(&lv_font_montserrat_12));
     lv_label_set_long_mode(s_track, LV_LABEL_LONG_DOT);
     /* Padlock: a white vector glyph, shown ONLY when the interface is locked.
      * It lives in a container so it can be shown and hidden as one block.
