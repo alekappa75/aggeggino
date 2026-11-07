@@ -61,7 +61,7 @@ esp_err_t leds_init(void)
     esp_err_t e = led_strip_new_rmt_device(&sc, &rc, &s_strip);
     if (e != ESP_OK) { ESP_LOGE(TAG, "led_strip init: %s", esp_err_to_name(e)); return e; }
     led_strip_clear(s_strip);
-    ESP_LOGI(TAG, "%d WS2812 su GPIO%d", LED_COUNT, LED_GPIO);
+    ESP_LOGI(TAG, "%d WS2812 on GPIO%d", LED_COUNT, LED_GPIO);
     return ESP_OK;
 }
 

@@ -9,12 +9,25 @@ with a different audience, and it has its own page —
 
 ## What you need
 
-**The device**
+**The device: three M5Stack modules, stacked.** From the top down:
 
-- an **M5Stack CoreS3-SE** (ESP32-S3, touch display, PSRAM, I²S audio)
-- a **W5500 Ethernet module** for the DJ Link side
-- optionally an **M5GO Bottom3**, for the ten status LEDs
-- optionally an **M5Stack Unit MIDI (U187)** on Port C, for MIDI DIN out
+| | what it brings |
+|---|---|
+| **CoreS3-SE** | the ESP32-S3: touch display, PSRAM, I²S audio, USB-C, and the WiFi used for Ableton Link |
+| **LAN module** (W5500) | wired Ethernet for the DJ Link side — RJ45, and a 9–24 V DC input that also powers the stack |
+| **LED base** | the battery, and the ten status LEDs in two strips down the sides of the unit |
+
+The LAN module is not an optional extra: the players speak DJ Link over the
+wire and nothing else will reach them.
+
+The LED base is, strictly, optional — the firmware runs without it — but it is
+what lets you read the device's state from across a room with the screen
+unreadable, which is the state a bridge on a shelf is usually in. See
+[what the LEDs say](dashboard.md#what-the-leds-say).
+
+**Also optional:** an **M5Stack Unit MIDI (U187)** on Port C, for MIDI DIN out
+and the audible click on the SAM2695. USB-MIDI, network MIDI, CV and OSC all
+work without it.
 
 **The two networks.** This is the part people get wrong, so it comes first.
 

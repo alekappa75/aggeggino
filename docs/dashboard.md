@@ -198,10 +198,21 @@ The long press on the circle is the one thing that still works.
 
 ## What the LEDs say
 
-With an M5GO Bottom3 fitted, ten LEDs along the front: five for the DJ Link
-side on the left, five for the Ableton/WiFi side on the right.
+With the LED base fitted, ten LEDs in **two strips of five down the sides** of
+the unit — and which side they are on is the whole point:
 
-**Left, DJ Link:**
+| | |
+|---|---|
+| **left-hand strip** | the LAN and DJ Link side |
+| **right-hand strip** | the WiFi and Ableton Link side |
+
+That mirrors the dashboard, where DJ Link is on the left and Ableton on the
+right, and it means the device is readable **across a room with the screen
+unreadable** — which is the state it is usually in, on a shelf behind the
+booth. A red strip on the left is a cable; a red strip on the right is a
+password.
+
+**Left strip — LAN and DJ Link:**
 
 | | |
 |---|---|
@@ -212,7 +223,7 @@ side on the left, five for the Ableton/WiFi side on the right.
 | steady green | the master is playing |
 | fast-blinking white | identity conflict — see [troubleshooting](troubleshooting.md) |
 
-**Right, Ableton Link / WiFi:**
+**Right strip — WiFi and Ableton Link:**
 
 | | |
 |---|---|

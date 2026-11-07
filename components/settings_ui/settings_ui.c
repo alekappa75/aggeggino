@@ -95,8 +95,8 @@ typedef enum {
      * family behind an entry about something else. */
     SCR_SINK,          /* list of clock outputs      */
     SCR_MIDI_NET,      /* Network MIDI 2.0 (UMP/UDP) */
-    SCR_MIDI_DIN,      /* MIDI DIN su Port C         */
-    SCR_MIDI_USB,      /* MIDI su USB-C (TinyUSB)    */
+    SCR_MIDI_DIN,      /* MIDI DIN on Port C         */
+    SCR_MIDI_USB,      /* MIDI over USB-C (TinyUSB)  */
     SCR_SINK_CV,       /* CV output                  */
     SCR_SINK_MIDI,     /* MIDI family: the three transports */
     SCR_ABOUT,         /* full-screen intro, no list */

@@ -3480,7 +3480,7 @@ static void midi_net_start(void)
      * not exist and restarted the host just started — visible in the boot log as
      * "Announce changed: restarting the host" two seconds after power-on. */
     s_mnet_mdns_on = cfg.enable_mdns;
-    ESP_LOGI(TAG, "[midinet] host '%s' (%s) su port %u, core 1",
+    ESP_LOGI(TAG, "[midinet] host '%s' (%s) on port %u, core 1",
              "aggeggino", s_mnet_id, (unsigned)midi2_net_host_port(s_mnet));
 }
 

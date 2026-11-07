@@ -58,12 +58,27 @@ components, log tags and build files. It is the same thing.
 
 ## Hardware
 
-- **M5Stack CoreS3-SE** (ESP32-S3) — touch display, PSRAM, I²S audio
-- **W5500 Ethernet module** for the DJ Link side (wired, as the players expect)
-- built-in WiFi for the Ableton Link side
-- CV pulse output on a GPIO, MIDI DIN and USB-MIDI
+**Three M5Stack modules, stacked** — which is what the picture above shows, from
+the top down:
 
-Built with ESP-IDF 5.5.4 and LVGL 9.
+| | what it brings |
+|---|---|
+| **CoreS3-SE** | the ESP32-S3 itself: touch display, PSRAM, I²S audio, USB-C |
+| **LAN module** (W5500) | wired Ethernet for the DJ Link side, RJ45 and a 9–24 V DC input |
+| **LED base** | the battery, and the ten status LEDs in two strips down the sides |
+
+WiFi for the Ableton Link side is built into the Core; nothing is added for it.
+
+The two protocols genuinely live on separate networks — the players on the
+wire, Link over the air — so the wired module is not an optional extra, it is
+half of what the bridge is.
+
+**Optional:** an **M5Stack Unit MIDI (U187)** on Port C, for MIDI DIN out and
+for the audible click on the SAM2695. Everything else — USB-MIDI, network MIDI,
+CV, OSC — works without it.
+
+Built with ESP-IDF 5.5.4 and LVGL 9. [**docs/building.md**](docs/building.md)
+has the toolchain and the build.
 
 ## Features
 

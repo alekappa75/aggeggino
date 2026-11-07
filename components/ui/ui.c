@@ -2150,7 +2150,7 @@ esp_err_t ui_init(void)
     build_dashboard();
     s_dash_scr = lv_screen_active();            /* remember the dashboard screen */
     settings_ui_init();                          /* create the settings screen, hidden */
-    s_offset_osc_us[0] = settings_get_phase_offset_osc_us(false);  /* da DJ Link */
+    s_offset_osc_us[0] = settings_get_phase_offset_osc_us(false);  /* from DJ Link */
     s_offset_osc_us[1] = settings_get_phase_offset_osc_us(true);   /* da Ableton */
     s_offset_midi_us[0] = settings_get_phase_offset_midi_us(false);
     s_offset_midi_us[1] = settings_get_phase_offset_midi_us(true);

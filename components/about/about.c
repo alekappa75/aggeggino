@@ -400,8 +400,8 @@ static void slide_init(void)
          * text. */
         s_sl_px[i] = SL[i].x;
         if (SL[i].right && s_sl_mask_ok) {
-            const int larg = s_sl_m[i].ink_x1;
-            if (larg > 0) s_sl_px[i] = (int16_t)(SL[i].x - larg);
+            const int width = s_sl_m[i].ink_x1;
+            if (width > 0) s_sl_px[i] = (int16_t)(SL[i].x - width);
         }
     }
     if (y > FX_H)
@@ -556,20 +556,20 @@ static void blit_green(uint16_t *fb, const uint16_t *tex, int sx, int sy,
  * matters. */
 static void fx_qr_level(uint16_t *fb, int t)
 {
-    const uint16_t modulo = display_rgb565_to_fb(mix565f(QR_BG, QR_FG, t));
+    const uint16_t module = display_rgb565_to_fb(mix565f(QR_BG, QR_FG, t));
     const int x_ink = QR_LEFT_X + QR_QUIET * QR_SCALE;
     const int y_ink = QR_TOP    + QR_QUIET * QR_SCALE;
 
     for (int mr = 0; mr < QR_MOD; mr++) {
-        uint32_t riga = QR_BITS[mr];
+        uint32_t row = QR_BITS[mr];
         const int y0 = y_ink + mr * QR_SCALE;
         for (int mc = 0; mc < QR_MOD; mc++) {
             /* UNSET modules are repainted like the rest: halfway through the
              * fade, the background between two lit modules is the screen's own
              * colour, and skipping them would leave residue from the previous
              * frame. */
-            const uint16_t col = (riga & (1u << mc)) ? modulo
-                                                     : display_rgb565_to_fb(QR_BG);
+            const uint16_t col = (row & (1u << mc)) ? module
+                                                    : display_rgb565_to_fb(QR_BG);
             const int x0 = x_ink + mc * QR_SCALE;
             for (int r = 0; r < QR_SCALE; r++) {
                 uint16_t *dst = &fb[(size_t)(FX_Y + y0 + r) * FX_W + x0];
@@ -627,9 +627,9 @@ static int s_blk_n;                        /* blocks revealed so far          */
  * one row higher. */
 static void blk_pos(int b, int *x, int *y, int *h)
 {
-    const int riga = b / BLK_NX;
-    const int col  = BLK_NX - 1 - (b % BLK_NX);   /* right to left */
-    const int y0   = FX_H - (riga + 1) * BLK;
+    const int row = b / BLK_NX;
+    const int col = BLK_NX - 1 - (b % BLK_NX);   /* right to left */
+    const int y0  = FX_H - (row + 1) * BLK;
     *x = col * BLK;
     *y = (y0 < 0) ? 0 : y0;                /* the top row is shorter          */
     *h = (y0 < 0) ? BLK + y0 : BLK;
@@ -818,31 +818,31 @@ static void line_type(uint16_t *fb, int i, int n_before, int n_now, int y)
      * which of the two directions it is serving. */
     const int n_lo  = (n_now < n_before) ? n_now : n_before;
     const int n_hi  = (n_now < n_before) ? n_before : n_now;
-    const int x_da  = (n_lo > 0) ? m->adv[n_lo - 1] : 0;
-    const int fine  = (n_hi < m->n_char) ? m->adv[n_hi] : m->adv[m->n_char - 1];
-    if (fine <= x_da) return;
+    const int x_from = (n_lo > 0) ? m->adv[n_lo - 1] : 0;
+    const int x_to   = (n_hi < m->n_char) ? m->adv[n_hi] : m->adv[m->n_char - 1];
+    if (x_to <= x_from) return;
 
     const int ry = y + m->ink_y0;
     const int rh = m->ink_y1 - m->ink_y0;
 
     const int x0 = s_sl_px[i];
-    fill_rect(fb, x0 + x_da, ry, fine - x_da, rh, FX_BG);
+    fill_rect(fb, x0 + x_from, ry, x_to - x_from, rh, FX_BG);
 
     /* The typed text, only across the part being repainted. */
-    const int x_testo = (n_now > 0) ? m->adv[n_now - 1] : 0;
-    if (x_testo > x_da)
-        display_text_mask_draw_span(m, x0, FX_Y + y, SL[i].col, x_da, x_testo);
+    const int x_text = (n_now > 0) ? m->adv[n_now - 1] : 0;
+    if (x_text > x_from)
+        display_text_mask_draw_span(m, x0, FX_Y + y, SL[i].col, x_from, x_text);
 
     /* The cursor, when the line is neither finished nor empty.
      *
-     * THE ZERO CASE MATTERS because of the rollback: at n_ora = 0 the line has
+     * THE ZERO CASE MATTERS because of the rollback: at n_now = 0 the line has
      * withdrawn completely, and drawing a cursor there would leave a solid block
      * over the first character — visible for good, since nothing comes after to
      * cover it. During typing the case never arises, the count starting at 1. */
     if (n_now > 0 && n_now < m->n_char)
-        fill_rect(fb, x0 + x_testo, ry, m->adv[n_now] - x_testo, rh, SL[i].col);
+        fill_rect(fb, x0 + x_text, ry, m->adv[n_now] - x_text, rh, SL[i].col);
 
-    display_flush_rect(x0 + x_da, FX_Y + ry, fine - x_da, rh);
+    display_flush_rect(x0 + x_from, FX_Y + ry, x_to - x_from, rh);
 }
 
 /* One frame of typing. Returns true once every line is complete.
@@ -874,12 +874,12 @@ static bool fx_type(uint16_t *fb)
          * COUNTED FROM THE END OF THE PAUSE, not from the start of the phase:
          * the tick runs during the half second the QR is left alone, and taking
          * it raw made the first line appear already eight characters long. */
-        const int dovuti = (s_tt_tick - TYPE_START_F) / TT_FRAMES - SL[i].start;
-        if (dovuti <= 0) {
+        const int due = (s_tt_tick - TYPE_START_F) / TT_FRAMES - SL[i].start;
+        if (due <= 0) {
             /* Not started yet. */
             continue;
         }
-        const int n_now = (dovuti < n_max) ? dovuti : n_max;
+        const int n_now = (due < n_max) ? due : n_max;
         const int n_pri = (s_tt_n[i] > 0) ? s_tt_n[i] : 0;
         if (n_now == n_pri) continue;                     /* nothing new */
 
@@ -937,22 +937,22 @@ static bool fx_type(uint16_t *fb)
 static bool fx_untype(uint16_t *fb)
 {
     s_tt_tick++;
-    bool vuote = true;
+    bool all_empty = true;
 
     for (int i = 0; i < SL_LINES; i++) {
         if (s_tt_n[i] <= 0) continue;                     /* already cleared */
-        vuote = false;
+        all_empty = false;
 
         /* Rank by vertical position: how many lines sit BELOW this one. The
          * lowest has rank 0 and starts at once. Computed here rather than kept
          * in a table because SL_LINES is eleven and the loop runs once per
          * frame — and because a table would be one more thing to keep in step
          * with the layout. */
-        int rango = 0;
+        int rank = 0;
         for (int k = 0; k < SL_LINES; k++)
-            if (s_sl_y[k] > s_sl_y[i]) rango++;
+            if (s_sl_y[k] > s_sl_y[i]) rank++;
 
-        if (s_tt_tick <= rango * UNTYPE_DELAY) continue;  /* not its turn yet */
+        if (s_tt_tick <= rank * UNTYPE_DELAY) continue;  /* not its turn yet */
 
         const int n_pri = s_tt_n[i];
         int n_now = n_pri - UNTYPE_SPEED;
@@ -961,7 +961,7 @@ static bool fx_untype(uint16_t *fb)
         line_type(fb, i, n_pri, n_now, s_sl_y[i]);
         s_tt_n[i] = (int16_t)n_now;
     }
-    return vuote;
+    return all_empty;
 }
 
 
@@ -1014,7 +1014,7 @@ static void fx_task(void *arg)
 
     int      paint_prev_x = -1;                     /* last stamp, -1 = none */
     int      paint_prev_y = -1;
-    int      qr_liv = 255;                          /* QR level, 255 = full */
+    int      qr_level = 255;                        /* QR level, 255 = full */
     uint16_t qr_col = mix565f(QR_BG, QR_FG, 255);   /* last colour rendered */
 
     int64_t t_wait = 0;              /* when the portrait was completed, 0 = not yet */
@@ -1040,7 +1040,7 @@ static void fx_task(void *arg)
     display_flush_stats_reset();
 
     while (!s_stop) {
-        int64_t fa = esp_timer_get_time();
+        int64_t t_frame = esp_timer_get_time();
         int phase = PH_IDLE;      /* the drawing branch decides it */
 
 
@@ -1096,9 +1096,9 @@ static void fx_task(void *arg)
                  * [M] Together they cost about 1.2 ms for the text and 9.0 for
                  * the QR: some 10 out of the 33 available, so the overlap fits
                  * comfortably. */
-                const bool testo_finito = fx_type(fb);
+                const bool text_done = fx_type(fb);
 
-                if (!testo_finito) phase = PH_TEXT;
+                if (!text_done) phase = PH_TEXT;
                 else st = ST_WAIT1;
                 break;
             }
@@ -1115,12 +1115,12 @@ static void fx_task(void *arg)
                  * would cost 8 ms a frame to change no pixel — the same lesson
                  * the breathing taught. */
                 const int f = s_tt_tick - QR_FADE_FROM;
-                if (f >= 0 && qr_liv > 0) {
-                    int liv = 255 - f * 255 / QR_FADE_LEN;
-                    if (liv < 0) liv = 0;
-                    const uint16_t col = mix565f(QR_BG, QR_FG, liv);
-                    if (col != qr_col) { fx_qr_level(fb, liv); qr_col = col; }
-                    qr_liv = liv;
+                if (f >= 0 && qr_level > 0) {
+                    int level = 255 - f * 255 / QR_FADE_LEN;
+                    if (level < 0) level = 0;
+                    const uint16_t col = mix565f(QR_BG, QR_FG, level);
+                    if (col != qr_col) { fx_qr_level(fb, level); qr_col = col; }
+                    qr_level = level;
                 }
 
                 /* The image is what decides: it starts last and finishes last,
@@ -1167,7 +1167,7 @@ static void fx_task(void *arg)
          *
          * Whoever draws knows what they dirtied, and is the only one who can
          * know it: the transfer belongs to the effect, not to the loop. */
-        ph_us[phase] += esp_timer_get_time() - fa;
+        ph_us[phase] += esp_timer_get_time() - t_frame;
         ph_f[phase]++;
         frames++;
 
@@ -1204,10 +1204,10 @@ static void fx_task(void *arg)
              * inside that window replaces it rather than waiting. */
 
             /* The circle always leaves, whatever is on screen. */
-            if (tap_y >= 248) goto fine;
+            if (tap_y >= 248) goto done;
 
             /* Without a texture there is nothing to reveal: the glass closes. */
-            if (!use_tex) goto fine;
+            if (!use_tex) goto done;
 
             switch (st) {
             case ST_TEXT:
@@ -1242,20 +1242,20 @@ static void fx_task(void *arg)
          * for a device left on a shelf, and what it must measure is how long the
          * LAST image has been sitting there. */
         if (st == ST_PAINT && (esp_timer_get_time() - t_wait) / 1000 > FX_MAX_MS)
-            goto fine;
+            goto done;
 
 
         t++;
-        int64_t used = (esp_timer_get_time() - fa) / 1000;
+        int64_t used = (esp_timer_get_time() - t_frame) / 1000;
         /* The painting phase runs at twice the rate: the touch has a 15 ms
          * cache, so at 33 ms we were asking for half the positions the sensor
          * could give, and a brush at 30 Hz leaves a broken trail. A stamp
          * costs 1.8 ms, well inside the halved budget. */
-        const int periodo = (st == ST_PAINT) ? FX_FPS_MS / 2 : FX_FPS_MS;
-        int wait = periodo - (int)used;
+        const int period = (st == ST_PAINT) ? FX_FPS_MS / 2 : FX_FPS_MS;
+        int wait = period - (int)used;
         vTaskDelay(pdMS_TO_TICKS(wait > 1 ? wait : 1));
     }
-fine:
+done:
 
 #if DJB_DEVELOPER
     /* THE INTRO'S MEASUREMENTS: microseconds per frame, how much time went
