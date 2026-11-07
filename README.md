@@ -3,7 +3,9 @@
 /addʒedˈdʒino/ · *n.* [It., dim. of **aggeggio**: gizmo]
 A small device persuading two machines to share a downbeat.
 
-<img src="docs/img/aggeggino.png" alt="AGGEGGINO: an M5Stack CoreS3 stacked on a LAN module and a battery base, its screen showing one shared tempo of 135 BPM" width="620">
+<p align="center">
+  <img src="docs/img/aggeggino.png" alt="AGGEGGINO: an M5Stack CoreS3 stacked on a LAN module and a battery base, its screen showing one shared tempo of 135 BPM" width="620">
+</p>
 
 ---
 
