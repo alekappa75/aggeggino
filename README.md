@@ -142,8 +142,8 @@ In detail:
 - follows a tempo change as quickly as a real player does: when you move the
   pitch, everything downstream moves with it instead of catching up
 - track metadata (title, artist, tempo) over the `dbserver` protocol
-- no `E-8309 Link Access Error` on the players' displays: they ask us
-  something that needs answering, and this firmware answers it
+- answers ONC-RPC portmapper queries: you will not see any `E-8309 Link Access
+  Error` on the player's display
 
 **Ableton Link**
 
