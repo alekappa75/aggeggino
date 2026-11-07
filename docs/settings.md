@@ -203,3 +203,7 @@ cache on both cores** for as long as it takes. Settings that can be changed in
 quick succession — the OSC custom messages, the phase offset — therefore do not
 write on every tap. The offset is saved 1.5 s after you stop adjusting it; the
 custom OSC profile is written when you leave its menu.
+
+The one practical consequence, given that the device is meant to be switched
+off without ceremony: a phase offset changed in the last second and a half is
+not in flash yet. Give it a moment before cutting the power.

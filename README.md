@@ -51,6 +51,27 @@ here MIDI, OSC and CV at once, with a −6 ms offset on the OSC.</td>
 Screenshots taken by the device itself: it writes its own screen to the SD
 card, which is how the pictures in [the manual](docs/) are made.
 
+## An appliance, not a computer
+
+The usual way to do this is software on a laptop, and a good part of the point
+of AGGEGGINO is that it is not.
+
+- **Instant on, instant off.** Nothing boots. No operating system to come up,
+  no application to launch, no audio or MIDI device to pick out of a list, no
+  update waiting for you the evening of a gig. Switch it on and it is bridging;
+  switch it off when you are done.
+- **It remembers.** Networks and keys, bridge direction, which outputs are on
+  and how they are set, the phase offsets — all in flash, all restored at
+  power-up. Configure it once at the bench and it arrives configured.
+- **It takes a corner of the table**, and a pocket of the bag, instead of a
+  laptop and its charger.
+- **Nothing else runs on it.** There is no second process to take the CPU at
+  the wrong moment, which is what makes the timing in the protocol notes the
+  timing it also has in a booth.
+
+It is, admittedly, also fairly geeky. In a DJ booth that has never been a
+disadvantage.
+
 ## Status
 
 Working and tested on hardware against 2× Pioneer XDJ-700, Ableton Live and

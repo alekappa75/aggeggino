@@ -28,6 +28,26 @@ driver, nothing to install. The subtitle under **Enabled** says whether a host
 has enumerated us — the row is about what we *want*, the subtitle about what is
 actually happening.
 
+**It takes about two seconds to appear, and on the way the host sees two
+different devices.** That is a property of the chip rather than a fault here.
+The ESP32-S3's USB PHY is connected to the ROM's serial device at reset, and
+handing it to TinyUSB for the MIDI class means the host has to enumerate us a
+second time. The sequence is therefore always:
+
+1. an Espressif serial device, from the ROM
+2. it disappears, as the PHY switches over
+3. **Aggeggino**, a MIDI device
+
+The switch is deferred **2 s** after boot: short enough that a host rarely
+settles on the first device, long enough to be dependable. The only way to
+remove step 1 altogether is to burn the `USB_PHY_SEL` eFuse, which is
+permanent and also changes how the board is programmed, so this firmware does
+not do it.
+
+So if a host is showing a stale serial port, or is not offering **Aggeggino**
+among its MIDI inputs, unplug the cable and plug it back in: the PHY is
+switched by then, and the MIDI device is the first thing it sees.
+
 > The USB serial console is disabled in this firmware, because it would clash
 > with the MIDI class exposed through TinyUSB on the same port. Serial logs come
 > out of Port B instead.
