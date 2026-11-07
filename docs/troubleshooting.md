@@ -242,9 +242,14 @@ write the same way.
 
 ---
 
-## In the development build, the long press takes a picture instead of locking
+## The long press takes a picture instead of locking
 
-Intended. The screenshot borrows the lock's gesture: same zone (`x` 125–195,
+Intended, and it only happens when you have asked for it: `Save screenshots`
+has to be switched on, and that entry only exists in a development build. In a
+development build with it off — which is how one is flashed — the long press
+locks the screen as usual.
+
+With it on, the screenshot borrows the lock's gesture: same zone (`x` 125–195,
 `y ≥ 248`), same 1.5 s threshold, recognised first and consuming the gesture.
 
 The reasoning is that the two are never wanted in the same hour. Screenshots

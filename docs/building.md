@@ -152,7 +152,7 @@ build and believing the number is the mistake worth naming.
 
 ---
 
-## 4. Reading the logs — and one wiring caution
+## 4. Reading the logs, and how Port B's two pins are allocated
 
 **The serial console is on Port B, not on USB-C.**
 
@@ -162,40 +162,43 @@ switched off explicitly (`CONFIG_ESP_CONSOLE_SECONDARY_NONE=y`), because
 leaving it on would give a conflict at start-up instead of a clear build error.
 
 The console is UART0 at 115200, moved off the default pins (GPIO 43/44, which
-sit on the M-Bus under the stack) onto Port B:
+sit on the M-Bus under the stack) onto Port B. **It is output-only, on purpose**:
+nothing is ever typed into this console, so the receive pin is not spent on it.
 
-| | GPIO | Port B |
+| Port B | GPIO | what it is |
 |---|---|---|
-| console **TX** | 9 | pin 2 |
-| console **RX** | 8 | pin 1 |
+| pin 2 | 9 | console **TX** — the log comes out here |
+| pin 1 | 8 | **CV pulse output**, taken from the console's nominal RX |
 
-> **⚠ Connect only GND and TX.**
->
-> **GPIO 8 is also the CV output** (`CV_GPIO` in `main.c`, the one the menu
-> calls `OUTPUT ON PORT B - PIN 1`). Wiring a USB-serial adapter's **TX** to
-> that pin puts two outputs on one line, and with CV enabled they fight on
-> every beat.
->
-> Nothing is wrong inside the firmware — the console's RX is an input nobody
-> uses, and the CV leaves the pin correctly. It is the cable that is the
-> hazard. The logs only travel one way, so leave the adapter's TX disconnected:
+The console's RX is configured in `sdkconfig.defaults` because the setting
+comes in pairs, but `cv_pin_init()` in `main.c` reconfigures the pin as a GPIO
+output and keeps it. Its comment says so in one line: *"Takes the pin from the
+console and makes it an output."* Two functions out of one Grove connector,
+deliberately.
+
+> **⚠ So, when wiring a serial adapter: GND and the device's TX only.**
 >
 > ```
 > adapter GND  ──  Port B GND
 > adapter RX   ──  Port B pin 2   (GPIO 9)
-> adapter TX   ──  not connected
+> adapter TX   ──  NOT CONNECTED  (pin 1 is an output)
 > ```
+>
+> Wiring the adapter's TX to pin 1 out of habit would put two outputs on one
+> wire. Nothing in the firmware is confused by it — the pin is an output by
+> design — but the cable would be a mistake, and with CV enabled the two would
+> push against each other on every beat.
 
 **UART0 and not UART1**, incidentally, because UART1 belongs to MIDI DIN on
 Port C.
 
-> **One inference to be aware of.** That G8 is RX and G9 is TX is *deduced*
-> from how the M5Stack library addresses Port C on the base Core — RX on the
-> lower GPIO, TX on the higher — and is not a figure read from a datasheet. The
-> note is in `sdkconfig.defaults` beside the setting. **If nothing arrives on
-> Port B, the first thing to try is swapping the two numbers.** If they do turn
-> out to be swapped, the overlap above moves to TX and the caution changes with
-> it.
+> **One inference to be aware of.** That G9 carries the TX, rather than G8, is
+> *deduced* from how the M5Stack library addresses Port C on the base Core — RX
+> on the lower GPIO, TX on the higher — and is not a figure read from a
+> datasheet. The note is in `sdkconfig.defaults` beside the setting. **If
+> nothing arrives on Port B, the first thing to try is swapping the two
+> numbers** — and if they do turn out to be swapped, the CV output and the log
+> swap pins with them.
 
 ---
 

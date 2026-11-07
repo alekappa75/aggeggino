@@ -144,7 +144,7 @@ and flashes in another leaves you guessing what it heard.
 
 The long press on the circle is the one thing that still works.
 
-> **In the development build the screenshot borrows this gesture, deliberately.**
+> **With screenshots switched on, they borrow this gesture, deliberately.**
 > With `DJB_DEVELOPER` on and `Settings > System > Developer > Save
 > screenshots` enabled, a long press on the circle writes a BMP to the card
 > instead of locking the screen — same zone, same 1.5 s, and the screenshot is
