@@ -29,6 +29,22 @@ Transmitting, and being *accepted* as tempo master by real players, is a
 considerably stricter requirement: it forces you to measure things you can
 otherwise get away with guessing.
 
+<table>
+<tr>
+<td width="50%"><img src="docs/img/dashboard-idle.png" alt="The dashboard with no bridge running: two independent tempos"></td>
+<td width="50%"><img src="docs/img/dashboard-bridging.png" alt="The dashboard with a bridge running: one shared tempo"></td>
+</tr>
+<tr>
+<td><b>No bridge.</b> The players at 128.5, the Link session at 122.0. Two
+clocks, not talking.</td>
+<td><b>Bridging.</b> One tempo, one phase, and the outputs that carry it —
+here MIDI, OSC and CV at once, with a −6 ms offset on the OSC.</td>
+</tr>
+</table>
+
+Screenshots taken by the device itself: it writes its own screen to the SD
+card, which is how the pictures in [the manual](docs/) are made.
+
 ## Status
 
 Working and tested on hardware against 2× Pioneer XDJ-700, Ableton Live and

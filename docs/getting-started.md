@@ -102,16 +102,19 @@ them.
 Two toggles on the dashboard, one at each side, and they are mutually exclusive:
 
 - **left toggle (cyan, arrow down)** — DJ Link → Ableton. The players lead;
-  Ableton Link follows. AGGEGGINO becomes the DJ Link tempo master, which it
-  has to negotiate with the players.
+  the Link session follows them.
 - **right toggle (arrow up)** — Ableton → DJ Link. Ableton leads; the players
-  follow.
+  follow, driven through their pitch. **This one** requires AGGEGGINO to become
+  the DJ Link tempo master, and that has to be negotiated with the players.
 
 Tap one. The two grey BPMs are replaced by a single large number: the tempo the
 two sides now share.
 
-Taking the master role is a negotiation, not a declaration, and the **MASTER**
-badge shows how it is going:
+Going left to right — following the players — nothing else happens: a Pioneer
+player stays master and the badge keeps its number.
+
+Going the other way, taking the master role is a negotiation rather than a
+declaration, and the **MASTER** badge shows how it is going:
 
 | badge | meaning |
 |---|---|

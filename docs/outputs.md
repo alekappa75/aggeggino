@@ -79,6 +79,8 @@ sequencer, a drum machine, a trigger input.
 **The output is on Port B, pin 1.** The menu says so under **Enabled**, and in
 those words, because the GPIO number has no marking on the connector.
 
+![Settings, Clock, Sink, CV](img/settings-cv.png)
+
 | entry | options | |
 |---|---|---|
 | **Enabled** | `ON` / `OFF` | |

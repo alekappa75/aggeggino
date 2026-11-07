@@ -5,6 +5,34 @@
 The screen you get at power-on. Everything on it is readable at arm's length in
 a dark booth, which is the only design constraint that mattered.
 
+![The dashboard with a bridge running](img/dashboard-bridging.png)
+
+## The track line
+
+The topmost line: what the master is playing, read from the player over the
+`dbserver` protocol.
+
+It behaves in three ways depending on what fits and what is known:
+
+- **title and artist both fit** → shown together, `Title - Artist`, no movement
+- **they do not fit** → they alternate every **3 seconds**
+- **only one is known** → always that one, with no pointless flashing
+
+The title is drawn lighter than the artist. That is the only thing telling them
+apart: labels would have cost space the line does not have.
+
+**With playback stopped the line is empty**, but the data stays in memory — so
+if the same piece resumes there is no fresh query to the player.
+
+The measurement of whether the two fit is done **once per track change**, not
+at the 20 Hz the screen refreshes at. Track names are full of accents and
+apostrophes, so the width is measured by LVGL on the real font rather than
+estimated by counting characters.
+
+An empty line while something is clearly playing usually means the metadata
+query could not run — see
+[when something is wrong](troubleshooting.md#no-title-or-artist-in-the-playlist-or-in-title-over-osc).
+
 ## Top band — DJ Link
 
 **The MASTER badge**, top left, with the device number in a square beside it.
@@ -30,6 +58,11 @@ bridge is running.
 `ABLETON` on the right in cyan. Two independent tempos, neither imposed on the
 other.
 
+![No bridge: the two tempos, independent](img/dashboard-idle.png)
+
+Here the players are at 128.5 and the Link session at 122.0 — they are simply
+not talking to each other, and the screen says so by showing both.
+
 **A bridge running:** one large white number with `BPM` under it. The tempo both
 sides now share.
 
@@ -40,11 +73,18 @@ exclusive — turning one on turns the other off.
 
 | | |
 |---|---|
-| **left, cyan, arrow down** | DJ Link → Ableton. The players lead. We take the DJ Link master role, and Ableton Link follows. |
-| **right, arrow up** | Ableton → DJ Link. Ableton leads. The players follow, driven through their pitch. |
+| **left, cyan, arrow down** | DJ Link → Ableton. The players lead; the Link session follows them. |
+| **right, arrow up** | Ableton → DJ Link. Ableton leads; the players follow, driven through their pitch. |
 
 Tap to switch. If a toggle flashes red instead of switching, the screen is
 locked — see below.
+
+**Only the right-hand direction needs the master role.** Imposing a tempo on
+the players means being their tempo master, and that has to be negotiated.
+Following them needs nothing of the sort: we read their tempo and put it into
+the Link session, and a Pioneer player stays master throughout — which is why
+the MASTER badge above can sit amber with a player's number on it while the
+left toggle is lit.
 
 ## Lower band — Ableton Link and the phase offset
 

@@ -77,6 +77,8 @@ This is the Ableton Link side.
 
 The rows below depend on the mode.
 
+![Settings, WiFi, in Client mode](img/settings-wifi.png)
+
 **In Client mode:** **Choose network** scans and lists what it finds; pick one
 and type the key. If the key is refused, an **AUTH** badge appears in red on the
 dashboard — the network was found, so this is the password and not the signal.

@@ -55,6 +55,10 @@ application sees none. Either add an explicit inbound rule for the ports in use
 The master negotiation failed. We asked for the role and did not get it inside
 the timeout.
 
+**This only arises with the right-hand bridge**, Ableton → DJ Link: imposing a
+tempo on the players means being their master. Following them, left to right,
+asks for nothing and cannot fail this way.
+
 It is a negotiation conducted **through the status packets**, not a declaration:
 we ask, the current master yields by naming its successor in its own status, and
 only then do we take over. If the current master never yields, nothing happens.
