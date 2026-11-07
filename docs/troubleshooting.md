@@ -266,9 +266,17 @@ the long press is the lock, always.
 ## Something changed in the settings and nothing happened
 
 If you changed `DJB_DEVELOPER` in `CMakeLists.txt` and the build behaves as
-before: `sdkconfig` is generated **once** and then kept. It has to be deleted
-(or `idf.py fullclean` run) for the new defaults to be read. Otherwise the build
-quietly keeps the old configuration and the switch appears inert.
+before: `sdkconfig` is generated **once** and then kept, so the new defaults are
+never read and the switch appears inert.
+
+**`idf.py fullclean` does not fix this.** It empties the build directory and
+leaves the project configuration alone — the documentation says so in as many
+words. The file itself has to go:
+
+```
+rm sdkconfig
+idf.py reconfigure
+```
 
 `tools/sdkconfig_diff.py` compares a saved `sdkconfig` against the current one
 and distinguishes differences that `DJB_DEVELOPER` is supposed to cause from

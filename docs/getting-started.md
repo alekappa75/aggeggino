@@ -2,6 +2,11 @@
 
 [← documentation index](README.md)
 
+For whoever has a device in hand: what to connect it to, and how to get the
+first bridge running. Compiling and flashing the firmware is a different job
+with a different audience, and it has its own page —
+[**Building**](building.md).
+
 ## What you need
 
 **The device**
@@ -26,25 +31,13 @@ A Push 3 standalone is WiFi-only. XDJ-700s speak DJ Link on the wire. In a
 mixed setup, the two protocols are genuinely on separate networks and the
 bridge has to be on both at once. That is the whole reason this thing exists.
 
-## Building and flashing
+## Getting the firmware onto it
 
-ESP-IDF 5.5.4.
+Covered in [**Building**](building.md) — the toolchain, the build, the
+`DJB_DEVELOPER` switch and the `sdkconfig` trap that goes with it, and where
+the serial console comes out.
 
-```
-idf.py set-target esp32s3
-idf.py build
-idf.py -p <PORT> flash monitor
-```
-
-Managed dependencies come down by themselves from the `idf_component.yml`
-manifests. WIZnet's ioLibrary is already in the repository — see
-[`VENDORED.md`](../components/w5500_net/VENDORED.md) for why it is committed
-rather than fetched.
-
-If you intend to work on the firmware rather than just run it, read the note on
-`DJB_DEVELOPER` in the [main README](../README.md#the-development-build) first:
-the development build pays FreeRTOS instrumentation on every context switch, so
-any timing you measure with it is not the timing of the firmware people run.
+Everything below assumes a flashed device.
 
 ## First run, step by step
 

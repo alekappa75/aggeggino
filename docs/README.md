@@ -5,7 +5,9 @@ for a menu-driven device goes stale the moment the menu moves, so it lives in
 the repository rather than in a wiki: `git checkout` of a tag gives you the
 firmware and the manual that matches it.
 
-## The manual
+## Using it
+
+For whoever has a device in hand.
 
 | | |
 |---|---|
@@ -15,6 +17,15 @@ firmware and the manual that matches it.
 | [**Clock outputs**](outputs.md) | MIDI (USB, DIN, network), CV pulses, OSC — including the custom OSC profile |
 | [**The SD card**](sd-card.md) | Playlists written as CSV, formatting, screenshots |
 | [**When something is wrong**](troubleshooting.md) | Symptoms, and what each one actually means |
+
+## Building it
+
+For whoever compiles the firmware. Kept separate on purpose: it is a different
+job for a different reader, and mixing the two makes each harder to follow.
+
+| | |
+|---|---|
+| [**Building**](building.md) | The toolchain, the build, `DJB_DEVELOPER` and the `sdkconfig` trap, the serial console and its one wiring caution, the project's layout |
 
 ## The protocol notes
 

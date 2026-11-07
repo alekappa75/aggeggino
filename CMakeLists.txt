@@ -29,9 +29,15 @@ set(DJB_DEVELOPER 0)
 # UART at 115200 blocks its caller for about 9 ms.
 #
 # MIND THIS: sdkconfig is generated ONCE and then kept. After changing this
-# value the sdkconfig file must be deleted (or 'idf.py fullclean') for the
-# defaults to be read again; otherwise the build uses the old configuration and
-# the switch appears to do nothing.
+# value the sdkconfig file must be DELETED for the defaults to be read again;
+# otherwise the build uses the old configuration and the switch appears to do
+# nothing.
+#
+# 'idf.py fullclean' is NOT enough, whatever one might assume: it empties the
+# build directory and the documentation states plainly that the project
+# configuration is not deleted. The file has to go.
+#
+#     rm sdkconfig && idf.py reconfigure
 if(DJB_DEVELOPER)
     set(SDKCONFIG_DEFAULTS "sdkconfig.defaults;sdkconfig.defaults.dev")
 else()

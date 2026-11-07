@@ -3,8 +3,12 @@
 
 WHY IT EXISTS. sdkconfig is generated once from the .defaults files and then
 KEPT: every change made with menuconfig stays in there and reaches no project
-file. An 'idf.py fullclean', or a change of DJB_DEVELOPER that forces a
-regeneration, loses them all without saying anything.
+file. Deleting the file — which is what a change of DJB_DEVELOPER requires, see
+the note in the top-level CMakeLists — loses them all without saying anything.
+
+('idf.py fullclean' does NOT delete sdkconfig: it empties the build directory
+and leaves the project configuration alone. Which is why this script is about
+the file, not about the build.)
 
 USE, before deleting sdkconfig:
 
