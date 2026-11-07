@@ -96,6 +96,23 @@ has the toolchain and the build.
 
 ## Features
 
+The whole of it, in one place:
+
+| | |
+|---|---|
+| **DJ Link** | over wired Ethernet. Virtual CDJ holding a real device number **1–4**, or `OBSERVER` to watch without claiming one. Reads beat and status, and transmits both; can take the tempo master role. Track metadata over `dbserver` |
+| **Ableton Link** | over WiFi, either as **SoftAP** — the device makes the network and your laptop or Push joins it — or as a **client** of a network you already have. Full peer, and able to join a session without imposing its own tempo |
+| **Bridging** | **both directions**, one at a time: DJ Link → Ableton, or Ableton → DJ Link |
+| **MIDI clock** | **three transports**, each switchable on its own and all usable at once: **USB-C** class compliant, **MIDI DIN** on the optional module, and **Network MIDI 2.0** over UDP, announced over mDNS |
+| **CV** | pulses on Port B pin 1. Division `1` / `2` / `4` / `24` PPQN, five pulse widths from `1` to `20` ms clamped to 45% of the beat, polarity either way up |
+| **OSC** | UDP to a host and port of your choosing, as `GENERIC`, `RESOLUME`, or a **`CUSTOM` profile of up to eight messages** built on the device — each with its own trigger, and placeholders for tempo, bar, title, artist, track id and player |
+| **Phase offset** | **±500 ms**, advance *or* delay, in 0.5 ms steps — and set **independently for every destination**: the bridge's far end, OSC, MIDI and CV each carry their own |
+| **SD card** | the set written as CSV while it plays, one line per track held past a threshold of 15–180 s. Screenshots too, in development builds |
+| **Reading it across a room** | ten side LEDs, five down each side — the left strip the DJ Link side, the right the Ableton side — a status badge per subsystem, and a screen lock for a booth |
+| **Settings** | kept in flash and restored on power-up, with a factory reset |
+
+In detail:
+
 **Pioneer Pro DJ Link**
 
 - Virtual CDJ: keep-alive, presence, device number claim (1–4) with a staged

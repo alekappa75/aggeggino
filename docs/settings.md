@@ -18,7 +18,7 @@ Settings
 │       │   ├── MIDI USB-C          Enabled
 │       │   ├── MIDI DIN Plug       Enabled
 │       │   └── Network MIDI 2.0    Enabled · Announce
-│       ├── OSC         Enabled · Preset · Host · Port · Custom
+│       ├── OSC         Enabled · Preset · Host · Port · Custom *
 │       └── CV          Enabled · Division · Pulse width · Polarity · Sound
 ├── WiFi                Status · TX Power · Mode · (mode-dependent)
 ├── LAN                 Status · DJ Link ID
@@ -27,6 +27,10 @@ Settings
 └── System              Status · About · Power off · Restart · Factory reset
                         └── Developer      (development builds only)
 ```
+
+\* The **Custom** row is there only while **Preset** is `CUSTOM`. With
+`GENERIC` or `RESOLUME` it would open a list that nothing reads, so it is not
+shown at all.
 
 The two networks come first on purpose: nothing works until they are right, and
 they are what anybody opening these menus is usually there to check.
