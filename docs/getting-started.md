@@ -29,9 +29,9 @@ shelf is usually in (see [what the LEDs say](dashboard.md#what-the-leds-say)),
 and the battery is what makes a brief power interruption a non-event.
 
 **Also optional:** an **M5Stack Unit MIDI with DIN connector** (SAM2695), SKU
-`M5-U187`, for MIDI DIN out and the audible click. It goes on **Port C** with a
-**Grove cable** — M5Stack's own, and it is not supplied with the unit.
-USB-MIDI, network MIDI, CV and OSC all work without it.
+`M5-U187`, for MIDI DIN out and the audible click. It goes on **Port C**, with
+the 20 cm HY2.0 4-pin Grove cable that comes in the box. USB-MIDI, network
+MIDI, CV and OSC all work without it.
 
 **Powering it.** Use the **DC jack on the LAN module**, and treat that as the
 normal way to run the device rather than one option among several. It takes
