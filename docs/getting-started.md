@@ -11,23 +11,43 @@ with a different audience, and it has its own page —
 
 **The device: three M5Stack modules, stacked.** From the top down:
 
-| | what it brings |
-|---|---|
-| **CoreS3-SE** | the ESP32-S3: touch display, PSRAM, I²S audio, USB-C, and the WiFi used for Ableton Link |
-| **LAN module** (W5500) | wired Ethernet for the DJ Link side — RJ45, and a 9–24 V DC input that also powers the stack |
-| **LED base** | the battery, and the ten status LEDs in two strips down the sides of the unit |
+| module | SKU | what it brings |
+|---|---|---|
+| **CoreS3-SE IoT Controller** | `M5-K128-SE` | the ESP32-S3: touch display, PSRAM, I²S audio, USB-C, and the WiFi used for Ableton Link |
+| **LAN Module 13.2** (W5500) | `M5-M136` | wired Ethernet for the DJ Link side — RJ45, and the DC jack that powers the whole stack |
+| **M5GO Battery Bottom3** | `M5-A014-D` | the 500 mAh battery, and the ten WS2812 status LEDs, five down each side of the unit |
 
-The LAN module is not an optional extra: the players speak DJ Link over the
-wire and nothing else will reach them.
+Two things worth checking before ordering. The **LAN module** is not an
+optional extra: the players speak DJ Link over the wire and nothing else will
+reach them. And the **Bottom3** must be the *CoreS3-only* variant — the other
+M5GO bottoms will not fit this Core.
 
-The LED base is, strictly, optional — the firmware runs without it — but it is
-what lets you read the device's state from across a room with the screen
-unreadable, which is the state a bridge on a shelf is usually in. See
-[what the LEDs say](dashboard.md#what-the-leds-say).
+The Bottom3 is, strictly, optional — the firmware runs without it — but it
+brings two things you will want. The LEDs let you read the device's state from
+across a room with the screen unreadable, which is the state a bridge on a
+shelf is usually in (see [what the LEDs say](dashboard.md#what-the-leds-say)),
+and the battery is what makes a brief power interruption a non-event.
 
-**Also optional:** an **M5Stack Unit MIDI (U187)** on Port C, for MIDI DIN out
-and the audible click on the SAM2695. USB-MIDI, network MIDI, CV and OSC all
-work without it.
+**Also optional:** an **M5Stack Unit MIDI with DIN connector** (SAM2695), SKU
+`M5-U187`, for MIDI DIN out and the audible click. It goes on **Port C** with a
+**Grove cable** — M5Stack's own, and it is not supplied with the unit.
+USB-MIDI, network MIDI, CV and OSC all work without it.
+
+**Powering it.** Use the **DC jack on the LAN module**, and treat that as the
+normal way to run the device rather than one option among several. It takes
+**9–24 V** on a **DC5521** barrel — 5.5 × 2.1 mm, centre positive — and the
+module's own step-down converter feeds the whole stack from it.
+
+The 500 mAh battery in the Bottom3 is a buffer, not a power supply. It is
+sized to ride out an interruption — a plug kicked out of a dirty socket, a
+mains flicker when somebody switches an amplifier on — so that the bridge does
+not drop out of the DJ Link network and have to renegotiate a device number in
+the middle of a set. It is not sized to run a Core driving a display, WiFi,
+Ethernet and ten LEDs for any length of time, so do not plan a set around it.
+
+Leaving the DC jack to do the powering also leaves **USB-C free for what it is
+for here**, which is the class-compliant MIDI interface — see
+[clock outputs](outputs.md).
 
 **The two networks.** This is the part people get wrong, so it comes first.
 

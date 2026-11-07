@@ -36,7 +36,8 @@ actually happening.
 
 `Settings > Clock > Sink > MIDI > MIDI DIN Plug`
 
-Needs an **M5Stack Unit MIDI (U187)** on **Port C**. 31250 baud, as the standard
+Needs an **M5Stack Unit MIDI with DIN connector** (SAM2695), SKU `M5-U187`, on
+**Port C**, connected with a **Grove cable**. 31250 baud, as the standard
 requires.
 
 When the module is absent the row shows **PORT C: MODULE NOT DETECTED** in red

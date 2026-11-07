@@ -3,7 +3,7 @@
 /addʒedˈdʒino/ · *n.* [It., dim. of **aggeggio**: gizmo]
 A small device persuading two machines to share a downbeat.
 
-<img src="docs/img/aggeggino.png" alt="AGGEGGINO: an M5Stack CoreS3 stacked on an Ethernet base, its screen showing one shared tempo of 135 BPM" width="620">
+<img src="docs/img/aggeggino.png" alt="AGGEGGINO: an M5Stack CoreS3 stacked on a LAN module and a battery base, its screen showing one shared tempo of 135 BPM" width="620">
 
 ---
 
@@ -62,14 +62,17 @@ components, log tags and build files. It is the same thing.
 
 ## Hardware
 
-**Three M5Stack modules, stacked** — which is what the picture above shows, from
-the top down:
+**Three M5Stack modules, stacked** — which is what the picture above shows,
+from the top down:
 
-| | what it brings |
-|---|---|
-| **CoreS3-SE** | the ESP32-S3 itself: touch display, PSRAM, I²S audio, USB-C |
-| **LAN module** (W5500) | wired Ethernet for the DJ Link side, RJ45 and a 9–24 V DC input |
-| **LED base** | the battery, and the ten status LEDs in two strips down the sides |
+| module | SKU | what it brings |
+|---|---|---|
+| **CoreS3-SE IoT Controller** | `M5-K128-SE` | the ESP32-S3 itself: touch display, PSRAM, I²S audio, USB-C |
+| **LAN Module 13.2** (W5500) | `M5-M136` | wired Ethernet for the DJ Link side: RJ45, and the DC jack that powers the stack |
+| **M5GO Battery Bottom3** | `M5-A014-D` | the 500 mAh battery, and the ten WS2812 LEDs, five down each side |
+
+The Bottom3 is the **CoreS3-only** variant — the other M5GO bottoms do not fit
+this Core.
 
 WiFi for the Ableton Link side is built into the Core; nothing is added for it.
 
@@ -77,9 +80,16 @@ The two protocols genuinely live on separate networks — the players on the
 wire, Link over the air — so the wired module is not an optional extra, it is
 half of what the bridge is.
 
-**Optional:** an **M5Stack Unit MIDI (U187)** on Port C, for MIDI DIN out and
-for the audible click on the SAM2695. Everything else — USB-MIDI, network MIDI,
-CV, OSC — works without it.
+**Optional, for MIDI DIN:** an **M5Stack Unit MIDI with DIN connector**
+(SAM2695), SKU `M5-U187`, on Port C with a **Grove cable**. It also provides
+the audible click. Everything else — USB-MIDI, network MIDI, CV, OSC — works
+without it.
+
+**Power it from the LAN module's DC jack**, not from USB-C: 9–24 V into a
+DC5521 barrel (5.5 × 2.1 mm, centre positive), which the module steps down for
+the whole stack. The battery in the Bottom3 is a 500 mAh buffer — it is there
+so that a kicked plug or a flickering mains does not take the bridge down in
+the middle of a set, and it is not sized to run the device for one.
 
 Built with ESP-IDF 5.5.4 and LVGL 9. [**docs/building.md**](docs/building.md)
 has the toolchain and the build.

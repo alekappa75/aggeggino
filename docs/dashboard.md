@@ -216,8 +216,9 @@ The long press on the circle is the one thing that still works.
 
 ## What the LEDs say
 
-With the LED base fitted, ten LEDs in **two strips of five down the sides** of
-the unit — and which side they are on is the whole point:
+With the **M5GO Battery Bottom3** fitted, ten WS2812 LEDs in **two strips of
+five down the sides** of the unit — and which side they are on is the whole
+point:
 
 | | |
 |---|---|
