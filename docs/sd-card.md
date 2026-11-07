@@ -136,11 +136,12 @@ circle** under the glass, from any screen. A beep confirms the write.
 Files are `SCRN0001.BMP`, `SCRN0002.BMP`, and so on, numbered the same way as
 the playlists.
 
-> **This takes over the screen lock.** The long press on the circle is also the
-> lock gesture: same zone, same 1.5 s, and the screenshot is recognised first.
-> With screenshots on, the long press photographs instead of locking — and if
-> the screen is already locked, the circle will not unlock it. See
-> [the dashboard](dashboard.md#the-screen-lock).
+> **This borrows the screen lock's gesture, by design.** The long press on the
+> circle is also the lock: same zone, same 1.5 s, and the screenshot is
+> recognised first. With screenshots on, the long press photographs instead of
+> locking — and if the screen is already locked, the circle will not unlock it.
+> The two are never wanted in the same hour: this is a desk feature and the
+> lock is a booth feature. See [the dashboard](dashboard.md#the-screen-lock).
 
 ### The format, and why
 

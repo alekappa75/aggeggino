@@ -144,12 +144,17 @@ and flashes in another leaves you guessing what it heard.
 
 The long press on the circle is the one thing that still works.
 
-> **In the development build, this gesture is taken by the screenshot.**
+> **In the development build the screenshot borrows this gesture, deliberately.**
 > With `DJB_DEVELOPER` on and `Settings > System > Developer > Save
 > screenshots` enabled, a long press on the circle writes a BMP to the card
-> instead of locking the screen. The two share the same zone and the same 1.5 s
-> threshold, and the screenshot is recognised first. Production builds have
-> neither the Developer menu nor this conflict.
+> instead of locking the screen — same zone, same 1.5 s, and the screenshot is
+> recognised first.
+>
+> It is a loan rather than a clash. Screenshots exist to produce the pictures
+> in this manual, which is a thing one does at a desk with the device in hand;
+> the lock exists for a booth, where nobody is compiling a development build.
+> The two are never wanted in the same hour. Production builds have neither the
+> Developer menu nor the substitution.
 
 ## What the LEDs say
 

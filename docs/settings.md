@@ -180,8 +180,9 @@ exist, and nor does the code behind it.
 |---|---|
 | **Save screenshots** | `ON` / `OFF`. A long press on the circle writes the screen to the card as a BMP. |
 
-With this on, the long press **no longer locks the screen** — the two gestures
-share a zone and a threshold, and the screenshot wins. See
+With this on, the long press **no longer locks the screen**: the screenshot
+borrows that gesture on purpose, because the two are never wanted at the same
+time — screenshots are for documenting at a desk, the lock is for a booth. See
 [the dashboard](dashboard.md#the-screen-lock).
 
 ---

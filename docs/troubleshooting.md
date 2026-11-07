@@ -242,18 +242,24 @@ write the same way.
 
 ---
 
-## In the development build, the screen lock does not work
+## In the development build, the long press takes a picture instead of locking
 
-Known, and it is a conflict rather than a failure. The long press on the circle
-is both the lock and the screenshot: same zone (`x` 125–195, `y ≥ 248`), same
-1.5 s threshold, and the screenshot is recognised first and consumes the
-gesture.
+Intended. The screenshot borrows the lock's gesture: same zone (`x` 125–195,
+`y ≥ 248`), same 1.5 s threshold, recognised first and consuming the gesture.
+
+The reasoning is that the two are never wanted in the same hour. Screenshots
+exist to produce the pictures in this manual — something done at a desk, with
+the device in hand and a development build flashed. The lock exists for a
+booth, where nobody is compiling anything. Giving the screenshot its own
+gesture would have meant one more thing to learn, for a feature that is not in
+the firmware people run.
 
 So with `Settings > System > Developer > Save screenshots` on, a long press
-photographs instead of locking — and if the screen was already locked, the
-circle will not unlock it. Turn screenshots off to get the lock back.
+photographs — and if the screen was already locked, the circle will not unlock
+it. Turn screenshots off to get the lock back.
 
-Production builds have neither the Developer menu nor this conflict.
+Production builds have neither the Developer menu nor the substitution: there
+the long press is the lock, always.
 
 ---
 
