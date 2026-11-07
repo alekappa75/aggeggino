@@ -1,0 +1,10 @@
+# GitHub Pages serves this repository from its root, so the landing page is
+# README.md and the manual lives under /docs/.
+#
+# Kept deliberately small. In particular there is no `exclude:` list: the
+# manual links to components/w5500_net/VENDORED.md and
+# components/midi_network/VENDORED.md, and excluding the component tree would
+# break both.
+
+title: AGGEGGINO
+description: Bidirectional bridge between Pioneer Pro DJ Link and Ableton Link, on an ESP32-S3
