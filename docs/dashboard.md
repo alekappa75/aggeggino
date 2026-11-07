@@ -125,19 +125,37 @@ switched off in the settings; a badge that is present carries a colour:
 
 | badge | green | grey | red |
 |---|---|---|---|
-| **LAN** | address obtained, DJ Link traffic | cable unplugged | the W5500 is not answering |
-| **MIDI** | clock going out | enabled, nothing to send | transport fault |
-| **OSC** | packets going out | enabled, nothing to send | socket fault |
-| **CV** | pulses going out | enabled, nothing to send | the pin is unavailable |
-| **SD** | mounted, writing the playlist | mounted, nothing to do | card present but unusable |
+| **LAN** | the W5500 is there and the cable is in | cable unplugged | the W5500 is not answering |
+| **WIFI** / **WIFI AP** | a client joined the AP, or we joined a network | up, but nobody at the other end | the adapter or the SoftAP failed |
+| **MIDI** | clock going out | enabled, nothing to send | enabled but failed to start |
+| **OSC** | packets going out | enabled, nothing to send | enabled but unusable |
+| **CV** | pulses going out | enabled, nothing to send | enabled but unavailable |
+| **SD** | mounted, writing the playlist | mounted, playlist off | card present but unusable |
 
 **LAN is always shown.** The others appear only when enabled. The SD badge is
 also absent when no card is in the slot.
 
+Two things about this strip are deliberate, and knowing them saves
+misreading it.
+
+**The badges do not blink, and the LEDs do.** Blinking was tried here and
+removed: a blinking LED is a point of light at the edge of vision, while a
+blinking badge is a filled rectangle moving underneath text you are trying to
+read. Same rate, very different irritation. Protocol state still reaches the
+screen, but where it earns the room — the MASTER badge, the beat boxes, the
+tempo.
+
+**The badges tell you about the plumbing, not about the protocol.** Three
+colours, and that is all: red faulty, grey inert, green working. A green
+**LAN** badge means the chip answered and the cable is in — it says nothing
+about whether any Pioneer is out there, which is what the left-hand LED strip
+and the MASTER badge are for. Likewise **one** MIDI badge covers all three
+transports: the strip answers *is MIDI going out*, not *through which port*.
+
 On the right-hand side:
 
-- **the WiFi badge**, whose label changes with the mode. In client mode a
-  signal-strength glyph sits beside it.
+- **the WiFi badge**, labelled `WIFI` in client mode and `WIFI AP` in SoftAP.
+  In client mode a signal-strength glyph sits beside it.
 - **a green badge with a number**, in SoftAP mode only: how many clients are
   connected.
 - **AUTH**, in red, to the left of the WiFi badge: the network was found but

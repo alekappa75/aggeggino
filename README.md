@@ -8,8 +8,9 @@ A small device persuading two machines to share a downbeat.
 ---
 
 **Bidirectional bridge between Pioneer Pro DJ Link and Ableton Link, running on
-an ESP32-S3 (M5Stack CoreS3-SE). Acts as a real tempo master on both sides, with
-MIDI, USB-MIDI, CV and OSC outputs.**
+an ESP32-S3 (M5Stack CoreS3-SE). Acts as a real tempo master on both sides, and
+puts the same timeline out again as MIDI clock — over USB-C, over DIN or over
+the network — as analog CV pulses and as OSC.**
 
 ---
 
@@ -23,8 +24,11 @@ and the Ableton Link session over WiFi — the two protocols normally live on
 separate networks — and can either follow the current master or become one
 itself.
 
-Tempo and phase are also available as MIDI clock, USB-MIDI, analog CV pulses and
-OSC, so the same timeline can drive hardware sequencers, visuals and lighting.
+Tempo and phase are also available as MIDI clock — three transports, all of
+them live at once if you want: class-compliant USB-MIDI on the USB-C port, MIDI
+DIN through an optional module, and Network MIDI 2.0 over UDP — as analog CV
+pulses, and as OSC. So the same timeline can drive hardware sequencers, visuals
+and lighting, each with its own phase offset.
 
 Most existing work in this area reads the DJ Link network and stops there.
 Transmitting, and being *accepted* as tempo master by real players, is a
@@ -101,9 +105,25 @@ has the toolchain and the build.
 
 **Clock outputs**
 
-- MIDI clock (DIN and USB-MIDI)
-- analog CV pulses, configurable division (1/2/4/24 PPQN), width and polarity
-- OSC, with generic and Resolume presets
+- **MIDI clock over three transports**, independent of each other:
+  - **USB-C**, class compliant — the host sees a MIDI device, no driver
+  - **MIDI DIN**, through an optional M5Stack Unit MIDI on Port C
+  - **Network MIDI 2.0** (UMP over UDP), announced over mDNS as `_midi2._udp`
+- **analog CV pulses**, configurable division (1/2/4/24 PPQN), width and
+  polarity, with the width clamped to 45% of the period so a pulse can never
+  swallow its own beat
+- **OSC**, with a generic and a Resolume preset, plus a **custom profile** built
+  on the device: up to eight messages, each with its own trigger, and
+  placeholders for tempo, bar, title, artist, track id and player
+- **a phase offset per destination**, ±500 ms in 0.5 ms steps, because a video
+  wall and a modular clock do not want the same correction
+
+**On the SD card**
+
+- the set written as it happens: a CSV line per track played past a
+  configurable threshold, with time, player, track id, title, artist and tempo
+- a silence longer than that threshold closes the file and the next track opens
+  a new one
 
 **Timing**
 

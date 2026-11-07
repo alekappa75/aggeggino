@@ -61,18 +61,22 @@ Its colour is the first thing to check:
 
 | LAN badge | meaning |
 |---|---|
-| red | the W5500 is not answering, or the cable is unplugged |
-| amber | link up, no address yet |
-| green | address obtained, DJ Link traffic seen |
+| red | the W5500 is not answering |
+| grey | the chip is fine, the cable is unplugged |
+| green | the chip answered and the cable is in |
 
-`Settings > LAN > Status` gives the address and how it was obtained. There may
-not be a DHCP server on a DJ booth network, and there usually is not: after
-three seconds without an answer the device assigns itself a `169.254.x.x`
-address, which is exactly what the players do, and everything works. That is
-not a failure, and the log says so plainly:
+Those three are the whole vocabulary, and the badge deliberately knows nothing
+beyond them: not whether an address was obtained, and not whether any player
+is out there. Green is the physical chain working, no more than that.
+
+For the address, `Settings > LAN > Status` gives it and how it was obtained.
+There may not be a DHCP server on a DJ booth network, and there usually is
+not: after three seconds without an answer the device assigns itself a
+`169.254.x.x` address, which is exactly what the players do, and everything
+works. That is not a failure, and the log says so plainly:
 
 ```
-I (7257) dhcp: no DHCP server answered in 3000 ms (sent 3, heard 0): auto-ip from here
+I (7257) dhcp: no DHCP server answered in 3000 ms (sent 3, heard 0): auto-ip from here, and no further asking
 I (7668) w5500: auto-ip: 169.254.179.175
 ```
 

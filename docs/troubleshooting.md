@@ -147,7 +147,7 @@ seconds without an answer the device assigns itself a `169.254.x.x` address, as
 RFC 3927 describes and as the players themselves do. Everything works.
 
 ```
-dhcp: no DHCP server answered in 3000 ms (sent 3, heard 0): auto-ip from here
+dhcp: no DHCP server answered in 3000 ms (sent 3, heard 0): auto-ip from here, and no further asking
 w5500: auto-ip: 169.254.179.175
 ```
 
@@ -302,17 +302,23 @@ A heartbeat line every 30 seconds carries the overall state:
 
 ```
 [hb] up=60s master=0(Mh=4) dj=130.00 link=120.00 sync=OFF off=+0us drift=wait
-     peers=0 W5500=0x04 heap=30323
+     peers=0 W5500=0x04 heap=30323 rpc_no=49
 ```
+
+Every field, in order:
 
 | field | |
 |---|---|
-| `master` | which device is master; `Mh` is the handoff field |
-| `dj` / `link` | the two tempos |
-| `drift` | `wait` while the compensator is still measuring |
+| `up` | seconds since power-on |
+| `master` | which device number is tempo master, `0` for none; `Mh` is the master-handoff field, `255` when nobody is yielding |
+| `dj` / `link` | the two tempos. Equal means a bridge is running |
+| `sync` | `OFF`, `ACTIVE`, `HOLD`, `RELEASE`, `NOMASTER` or `NOSRC` |
+| `off` | the phase offset of the **bridge** destination, in µs |
+| `drift` | `OFF` if compensation is disabled, `wait` while it is still measuring, otherwise the correction in ppm |
 | `peers` | Ableton Link peers |
 | `W5500` | the version register; `0x04` is a live chip |
 | `heap` | free internal heap, the scarce resource on this board |
+| `rpc_no` | how many "not registered" answers the portmapper has given — see the `E-8309` entry above |
 
 In production builds the log level is compiled down to warnings, so the
 heartbeat and the metrics are not merely hidden — they are not in the binary.
