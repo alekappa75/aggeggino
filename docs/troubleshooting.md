@@ -276,36 +276,3 @@ idf.py reconfigure
 and distinguishes differences that `DJB_DEVELOPER` is supposed to cause from
 settings that would be silently lost.
 
----
-
-## Reading the logs
-
-Serial logs come out of **Port B** (the USB serial console is disabled, because
-it would clash with the MIDI class exposed on USB-C through TinyUSB).
-
-A heartbeat line every 30 seconds carries the overall state:
-
-```
-[hb] up=60s master=0(Mh=4) dj=130.00 link=120.00 sync=OFF off=+0us drift=wait
-     peers=0 W5500=0x04 heap=30323 rpc_no=49
-```
-
-Every field, in order:
-
-| field | |
-|---|---|
-| `up` | seconds since power-on |
-| `master` | which device number is tempo master, `0` for none; `Mh` is the master-handoff field, `255` when nobody is yielding |
-| `dj` / `link` | the two tempos. Equal means a bridge is running |
-| `sync` | `OFF`, `ACTIVE`, `HOLD`, `RELEASE`, `NOMASTER` or `NOSRC` |
-| `off` | the phase offset of the **bridge** destination, in µs |
-| `drift` | `OFF` if compensation is disabled, `wait` while it is still measuring, otherwise the correction in ppm |
-| `peers` | Ableton Link peers |
-| `W5500` | the version register; `0x04` is a live chip |
-| `heap` | free internal heap, the scarce resource on this board |
-| `rpc_no` | how many "not registered" answers the portmapper has given — see the `E-8309` entry above |
-
-In production builds the log level is compiled down to warnings, so the
-heartbeat and the metrics are not merely hidden — they are not in the binary.
-That is 132 `ESP_LOGI` calls removed, and every line on the UART at 115200
-blocks its caller for about 9 ms.

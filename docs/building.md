@@ -273,5 +273,26 @@ lines are not merely hidden — they are **not in the binary**. 132 `ESP_LOGI`
 calls not generated, and every line on the UART at 115200 blocks its caller for
 about 9 ms.
 
-[**When something is wrong**](troubleshooting.md#reading-the-logs) explains how
-to read the heartbeat.
+### The heartbeat
+
+One line every 30 seconds, carrying the overall state:
+
+```
+[hb] up=60s master=0(Mh=4) dj=130.00 link=120.00 sync=OFF off=+0us drift=wait
+     peers=0 W5500=0x04 heap=30323 rpc_no=49
+```
+
+Every field, in order:
+
+| field | |
+|---|---|
+| `up` | seconds since power-on |
+| `master` | which device number is tempo master, `0` for none; `Mh` is the master-handoff field, `255` when nobody is yielding |
+| `dj` / `link` | the two tempos. Equal means a bridge is running |
+| `sync` | `OFF`, `ACTIVE`, `HOLD`, `RELEASE`, `NOMASTER` or `NOSRC` |
+| `off` | the phase offset of the **bridge** destination, in µs |
+| `drift` | `OFF` if compensation is disabled, `wait` while it is still measuring, otherwise the correction in ppm |
+| `peers` | Ableton Link peers |
+| `W5500` | the version register; `0x04` is a live chip |
+| `heap` | free internal heap, the scarce resource on this board |
+| `rpc_no` | how many "not registered" answers the RPC portmapper has given, which is what keeps `E-8309 Link Access Error` off the players' displays |
