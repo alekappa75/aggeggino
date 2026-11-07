@@ -256,7 +256,7 @@ diminutive, and carries the affection that comes with it.
 
 *Code for the studio, coffee for the developer.*
 
-[**buymeacoffee.com/alekappa**](https://buymeacoffee.com/alekappa)
+[<img src="docs/img/coffee.svg" alt="Buy me a coffee" width="212">](https://buymeacoffee.com/alekappa)
 
 ## License
 
