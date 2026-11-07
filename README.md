@@ -254,7 +254,7 @@ diminutive, and carries the affection that comes with it.
 
 ## Coffee
 
-*Code for the studio, coffee for the developer.*
+*Code for the studio, coffee for the bench.*
 
 [<img src="docs/img/coffee.svg" alt="Buy me a coffee" width="212">](https://buymeacoffee.com/alekappa)
 
