@@ -209,12 +209,34 @@ CMakeLists.txt            DJB_DEVELOPER and the version
 sdkconfig.defaults        the substantive configuration, commented
 sdkconfig.defaults.dev    the three options that follow the switch
 sdkconfig.defaults.prod
+partitions.csv            the partition table, see below
 main/main.c               the network state machine, drift compensation,
                           the beat engine, the quiet window on the SPI bus
 components/               twenty-three of them
 tools/sdkconfig_diff.py
 docs/                     this manual and the protocol notes
 ```
+
+### The flash layout
+
+The partition table is a custom one — `CONFIG_PARTITION_TABLE_CUSTOM` in
+`sdkconfig.defaults`, pointing at `partitions.csv` — because the default
+tables do not leave room for an application this size:
+
+| | type | offset | size |
+|---|---|---|---|
+| `nvs` | data | `0x9000` | 24 KB — every setting the device remembers |
+| `phy_init` | data | `0xf000` | 4 KB |
+| `factory` | app | `0x10000` | 6 MB |
+
+**One application slot, and no OTA.** There is no `ota_0`/`ota_1` pair and no
+`otadata`, so the firmware is replaced over USB and never over the air. That
+is a deliberate simplification rather than an omission: over-the-air updating
+would cost two application slots, and the device is flashed at a bench with a
+cable in reach.
+
+The flash itself is configured as 16 MB, so the space above `0x610000` is
+unused and available if that ever changes.
 
 The components worth knowing first:
 
