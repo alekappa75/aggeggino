@@ -252,6 +252,12 @@ revision matters.
 something, though not always something you can name. *Aggeggino* is its
 diminutive, and carries the affection that comes with it.
 
+## Coffee
+
+*Code for the studio, coffee for the developer.*
+
+[**buymeacoffee.com/alekappa**](https://buymeacoffee.com/alekappa)
+
 ## License
 
 **GPL-3.0-or-later.** See [LICENSE](LICENSE).
