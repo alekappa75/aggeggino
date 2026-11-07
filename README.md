@@ -75,8 +75,8 @@ disadvantage.
 ## Status
 
 Working and tested on hardware against 2× Pioneer XDJ-700, Ableton Live and
-Push 3 standalone. This is a personal project, not a product — expect rough
-edges, and read the protocol notes before relying on it in a live situation.
+Push 3 standalone. This is a personal project, not a product — expect the
+unexpected!
 
 The firmware sources still use `djbridge` as an internal name throughout
 components, log tags and build files. It is the same thing.
