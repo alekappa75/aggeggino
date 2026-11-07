@@ -1,0 +1,150 @@
+# Getting started
+
+[← documentation index](README.md)
+
+## What you need
+
+**The device**
+
+- an **M5Stack CoreS3-SE** (ESP32-S3, touch display, PSRAM, I²S audio)
+- a **W5500 Ethernet module** for the DJ Link side
+- optionally an **M5GO Bottom3**, for the ten status LEDs
+- optionally an **M5Stack Unit MIDI (U187)** on Port C, for MIDI DIN out
+
+**The two networks.** This is the part people get wrong, so it comes first.
+
+DJ Link and Ableton Link normally do not live on the same network, and
+AGGEGGINO does not try to pretend otherwise. It sits on **both**:
+
+- **DJ Link over the wire.** The players expect wired Ethernet, and that is what
+  the W5500 is for. No switch is needed for two players and the bridge if they
+  are already on a switch; if they are not, you need one.
+- **Ableton Link over WiFi.** Either AGGEGGINO makes its own access point and
+  your laptop or Push joins it, or AGGEGGINO joins a network you already have.
+
+A Push 3 standalone is WiFi-only. XDJ-700s speak DJ Link on the wire. In a
+mixed setup, the two protocols are genuinely on separate networks and the
+bridge has to be on both at once. That is the whole reason this thing exists.
+
+## Building and flashing
+
+ESP-IDF 5.5.4.
+
+```
+idf.py set-target esp32s3
+idf.py build
+idf.py -p <PORT> flash monitor
+```
+
+Managed dependencies come down by themselves from the `idf_component.yml`
+manifests. WIZnet's ioLibrary is already in the repository — see
+[`VENDORED.md`](../components/w5500_net/VENDORED.md) for why it is committed
+rather than fetched.
+
+If you intend to work on the firmware rather than just run it, read the note on
+`DJB_DEVELOPER` in the [main README](../README.md#the-development-build) first:
+the development build pays FreeRTOS instrumentation on every context switch, so
+any timing you measure with it is not the timing of the firmware people run.
+
+## First run, step by step
+
+### 1. Power on and look at the LAN badge
+
+The status strip at the bottom of the dashboard always carries a **LAN** badge.
+Its colour is the first thing to check:
+
+| LAN badge | meaning |
+|---|---|
+| red | the W5500 is not answering, or the cable is unplugged |
+| amber | link up, no address yet |
+| green | address obtained, DJ Link traffic seen |
+
+`Settings > LAN > Status` gives the address and how it was obtained. There may
+not be a DHCP server on a DJ booth network, and there usually is not: after
+three seconds without an answer the device assigns itself a `169.254.x.x`
+address, which is exactly what the players do, and everything works. That is
+not a failure, and the log says so plainly:
+
+```
+I (7257) dhcp: no DHCP server answered in 3000 ms (sent 3, heard 0): auto-ip from here
+I (7668) w5500: auto-ip: 169.254.179.175
+```
+
+### 2. Set up the WiFi side
+
+`Settings > WiFi > Mode` switches between **SoftAP** and **Client**.
+
+**SoftAP** is the quicker route and needs nothing at the other end. AGGEGGINO
+becomes the access point; your laptop or Push joins it.
+
+- default network name: `aggeggino`
+- default password: `m5stack1`
+- the device is at `172.16.42.1`, and hands out `.100` to `.150`
+
+Both the name and the password can be changed under `Settings > WiFi`, and
+should be if the device ever leaves your own bench.
+
+**Client** joins an existing network. `Settings > WiFi > Choose network` scans
+and lists what it finds; pick one and type the key.
+
+One thing to check on a network you did not set up: **client isolation must be
+off**. Ableton Link's measurement phase is unicast between peers. With client
+isolation on, the multicast discovery gets through and the peers see each other,
+but they never merge — so Link appears to work and the tempo never agrees.
+
+### 3. Check that the players are there
+
+With the cable in and the players on, `Settings > LAN > Status` shows the DJ
+Link ID the device took. The dashboard shows the players' beat as four boxes
+lighting in turn, and the **MASTER** badge shows which player is the tempo
+master.
+
+At this point nothing is bridged yet. The dashboard shows **two** BPM figures,
+grey, side by side: `DJ LINK` on the left, `ABLETON` on the right. They are
+independent, and that is the point — you can see both before deciding to join
+them.
+
+### 4. Turn on a bridge
+
+Two toggles on the dashboard, one at each side, and they are mutually exclusive:
+
+- **left toggle (cyan, arrow down)** — DJ Link → Ableton. The players lead;
+  Ableton Link follows. AGGEGGINO becomes the DJ Link tempo master, which it
+  has to negotiate with the players.
+- **right toggle (arrow up)** — Ableton → DJ Link. Ableton leads; the players
+  follow.
+
+Tap one. The two grey BPMs are replaced by a single large number: the tempo the
+two sides now share.
+
+Taking the master role is a negotiation, not a declaration, and the **MASTER**
+badge shows how it is going:
+
+| badge | meaning |
+|---|---|
+| blinking amber | negotiating; the role is not ours yet |
+| steady green | master acquired |
+| blinking red | the negotiation failed, and the bridge has stopped |
+| steady amber | a Pioneer player is master |
+
+### 5. Pick up the tempo somewhere else
+
+Nothing more is needed for the bridge itself. Everything under
+`Settings > Clock > Sink` is about getting that tempo out as something else —
+MIDI clock, CV pulses, OSC — and has its own page:
+[**Clock outputs**](outputs.md).
+
+## What to do if it does not work
+
+[**When something is wrong**](troubleshooting.md) is organised by symptom.
+Two things worth knowing before you start looking anywhere else:
+
+**`E-8309 Link Access Error` on the players' displays** is not a fault in your
+setup. It has a specific cause and this firmware already answers it; if you see
+it, the explanation is in the troubleshooting page.
+
+**Ableton Link not merging** is almost always client isolation on the access
+point, or a firewall on the computer silently dropping inbound UDP. On macOS,
+Little Snitch blocks inbound UDP to unsigned applications **without showing any
+warning at all** — and traffic from a terminal still gets through, so a
+`tcpdump` sees everything while the application sees nothing.

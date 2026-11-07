@@ -617,21 +617,26 @@ void sdcard_format_ack(void)
 /* ============================================================================
  * SCREENSHOTS
  *
- * BMP, NOT PNG. The framebuffer is already RGB565 and a 16-bit BMP takes it
- * VERBATIM: a 70-byte header and the pixels, no compression, no library, no
- * CPU. PNG would mean zlib and a hundred milliseconds of squeezing to save
- * space on a card that has plenty. Converting on a PC costs nothing.
+ * BMP, NOT PNG: no compression, no library, no CPU worth counting. PNG would
+ * mean zlib and a hundred milliseconds of squeezing to save space on a card
+ * that has plenty. Converting on a PC costs nothing.
  *
- * TWO THINGS HAVE TO BE FIXED on the way out, and both are one line:
+ * 24-BIT, not the 16 the framebuffer would copy verbatim — see the comment on
+ * bmp_header for why, which is a story about readers disagreeing over bit
+ * masks and macOS Preview refusing the result.
+ *
+ * THREE THINGS HAPPEN on the way out:
  *
  *   BYTE ORDER   the panel wants big-endian, a file wants little — the same
  *                swap display.c documents, applied backwards
+ *   COLOUR       565 to 888, repeating each field's high bits into the gap, or
+ *                white comes out grey and the whole picture reads dark
  *   ROW ORDER    BMP stores the bottom row first, unless the height is written
  *                negative. Negative height is used here: it is understood
  *                everywhere that matters and saves reversing 240 rows
  *
- * A LINE AT A TIME, 640 bytes, because the framebuffer is in PSRAM and the card
- * wants a buffer it can send: copying the whole 150 KB into internal memory is
+ * A LINE AT A TIME, 960 bytes, because the framebuffer is in PSRAM and the card
+ * wants a buffer it can send: copying the whole picture into internal memory is
  * not possible, and one row is small enough to sit on the stack.
  * ==========================================================================*/
 #define SHOT_PREFIX  "SCRN"

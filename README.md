@@ -79,10 +79,27 @@ Built with ESP-IDF 5.5.4 and LVGL 9.
   the shared SPI bus, so the packet that carries phase is not delayed by a
   screen refresh
 
+## Documentation
+
+The manual lives in [`docs/`](docs/) and is versioned with the firmware it
+describes — a `git checkout` of a tag gives you both, matching.
+
+- [**Getting started**](docs/getting-started.md) — what you need, the two
+  networks, and the first bridge from scratch
+- [**The dashboard**](docs/dashboard.md) — the main screen, the three buttons
+  under the glass, the screen lock
+- [**Settings**](docs/settings.md) — the complete menu tree
+- [**Clock outputs**](docs/outputs.md) — MIDI, CV, OSC, and the custom OSC
+  profile
+- [**The SD card**](docs/sd-card.md) — playlists as CSV, formatting, screenshots
+- [**When something is wrong**](docs/troubleshooting.md) — by symptom
+
 ## Protocol documentation
 
 The DJ Link implementation is a clean-room effort based on direct observation of
-real hardware. The notes are included in this repository.
+real hardware. The notes are in this repository, in
+[English](docs/protocol-notes.md) and in the
+[Italian](docs/protocol-notes.it.md) they were measured and written in.
 
 Every non-obvious claim in them is marked with its evidence:
 **[M]** measured on real hardware, **[D]** deduced from measurements with the
