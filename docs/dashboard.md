@@ -135,22 +135,14 @@ switched off in the settings; a badge that is present carries a colour:
 **LAN is always shown.** The others appear only when enabled. The SD badge is
 also absent when no card is in the slot.
 
-Two things about this strip are deliberate, and knowing them saves
-misreading it.
-
-**The badges do not blink, and the LEDs do.** Blinking was tried here and
-removed: a blinking LED is a point of light at the edge of vision, while a
-blinking badge is a filled rectangle moving underneath text you are trying to
-read. Same rate, very different irritation. Protocol state still reaches the
-screen, but where it earns the room — the MASTER badge, the beat boxes, the
-tempo.
-
 **The badges tell you about the plumbing, not about the protocol.** Three
 colours, and that is all: red faulty, grey inert, green working. A green
 **LAN** badge means the chip answered and the cable is in — it says nothing
 about whether any Pioneer is out there, which is what the left-hand LED strip
 and the MASTER badge are for. Likewise **one** MIDI badge covers all three
 transports: the strip answers *is MIDI going out*, not *through which port*.
+Protocol state does reach the screen, but where it earns the room: the MASTER
+badge, the beat boxes, the tempo.
 
 On the right-hand side:
 
@@ -172,10 +164,9 @@ between them so that a near miss does nothing rather than the wrong thing:
                  dead          dead
 ```
 
-The dead bands are deliberate. With contiguous zones, one pixel changed the
-action — and aiming at the circle to open the settings while landing on an
-arrow would move the phase offset, that is, put the clock out of phase in the
-middle of a set.
+The dead bands are deliberate: aiming at the circle to open the settings and
+landing on an arrow would move the phase offset — that is, put the clock out of
+phase in the middle of a set.
 
 | | |
 |---|---|

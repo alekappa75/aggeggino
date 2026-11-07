@@ -171,9 +171,8 @@ Every non-obvious claim in them is marked with its evidence:
 reasoning spelled out, **[I]** an unverified hypothesis, **[E]** from an external
 source. There is also a section listing what is still unknown.
 
-This is deliberate. An earlier revision stated some plausible guesses as
-established fact, and that led to wrong design decisions. A declared uncertainty
-is worth more than an invented certainty.
+A declared uncertainty is worth more than an invented certainty: a guess marked
+as a guess can be tested, while a guess stated as fact gets built on.
 
 ## Building
 

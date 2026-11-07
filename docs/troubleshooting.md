@@ -231,21 +231,6 @@ Things to check, in order:
 
 ---
 
-## A beep comes out broken while cycling an option quickly
-
-Fixed, but worth recording in case it reappears in new code.
-
-A write to flash **stalls the instruction cache on both cores** for as long as
-it takes, which truncates whatever the audio task was playing. Writing on every
-tap of a cycling option therefore broke the beep.
-
-Settings that can change in quick succession no longer write immediately: the
-custom OSC profile is saved on leaving its menu, and the phase offset 1.5 s
-after you stop adjusting it. If you add a new setting that cycles, defer its
-write the same way.
-
----
-
 ## The long press takes a picture instead of locking
 
 Intended, and it only happens when you have asked for it: `Save screenshots`

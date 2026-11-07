@@ -232,10 +232,16 @@ The components worth knowing first:
 the W5500, the display and the SD card share one SPI bus, and the MISO pin is
 also the display's DC. Beat packets are the players' phase reference, and
 anything that holds the bus delays them. There is a *quiet window* around each
-beat that every consumer of the bus has to honour — in a first version only the
-display did, and the network drains went on taking it.
+beat that every consumer of the bus has to honour, the network drains included.
 [§4.3 of the protocol notes](protocol-notes.md#43-spi-bus-contention--the-main-problem)
 has the measurements.
+
+**The other rule for new code:** a setting that can change in quick succession
+must not write to NVS on every change. A flash write stalls the instruction
+cache on **both cores** for as long as it takes, which truncates whatever the
+audio task is playing. The phase offset is therefore written 1.5 s after the
+last adjustment, and the custom OSC profile on leaving its menu; anything new
+that cycles needs the same treatment.
 
 ---
 
@@ -255,8 +261,7 @@ fetches it again.
 **Something built last week and does not now** — a `reconfigure` recomputes the
 component dependency graph, and a header that had been arriving transitively
 can stop. That is not a regression, it is the graph being recomputed correctly:
-the component is missing a `REQUIRES`. It happened here twice, both times with
-`esp_timer`.
+the component is missing a `REQUIRES`. `esp_timer` is the usual culprit.
 
 ---
 

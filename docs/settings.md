@@ -198,6 +198,4 @@ One thing with a visible consequence: **a flash write stalls the instruction
 cache on both cores** for as long as it takes. Settings that can be changed in
 quick succession — the OSC custom messages, the phase offset — therefore do not
 write on every tap. The offset is saved 1.5 s after you stop adjusting it; the
-custom OSC profile is written when you leave its menu. If you had ever noticed a
-beep come out broken while cycling an option quickly, that was this, and it is
-why the writes are deferred now.
+custom OSC profile is written when you leave its menu.

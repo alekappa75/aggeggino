@@ -151,17 +151,16 @@ the playlists.
 squeezing to save space on a card that has plenty. Converting on a computer
 costs nothing.
 
-**24-bit and not the 16 that would copy the framebuffer verbatim**, which is
-worth recording because it cost an evening. A 16-bit BMP needs bit masks to say
-which bits carry which colour; those masks live in a header that exists in three
-incompatible lengths, and readers disagree about all of it. The first attempt
-here wrote the masks of one variant with the length of another, and macOS
-Preview refused the file outright. A 24-bit BMP has none of that — plain
-`BITMAPINFOHEADER`, no masks — and everything opens it. The cost is three shifts
-per pixel and 230 KB instead of 150.
+**24-bit and not the 16 that would copy the framebuffer verbatim.** A 16-bit
+BMP needs bit masks to say which bits carry which colour; those masks live in a
+header that exists in three incompatible lengths, and readers disagree about all
+of it — mismatch the masks against the length and a reader can refuse the file
+outright. A 24-bit BMP has none of that — plain `BITMAPINFOHEADER`, no masks —
+and everything opens it. The cost is three shifts per pixel and 230 KB instead
+of 150.
 
-Three things happen on the way out, and each was a bug before it was a line of
-code: the bytes are swapped, because the panel is big-endian and a file is not;
+Three things happen on the way out: the bytes are swapped, because the panel is
+big-endian and a file is not;
 the colour is expanded from 565 to 888 **repeating each field's high bits into
 the gap**, or `0x1F` becomes `0xF8` rather than `0xFF`, white comes out slightly
 grey and the whole picture reads dark; and the height is written negative, which
@@ -169,4 +168,4 @@ is how BMP says "rows top to bottom" and saves reversing 240 of them.
 
 The picture is captured from the display driver's flush, after the byte swap —
 not from LVGL's buffers, which it hands straight to the panel and never touches
-again. Reading those gave a black image.
+again, so there is nothing to read there.
