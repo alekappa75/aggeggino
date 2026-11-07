@@ -139,12 +139,11 @@ In detail:
 - Virtual CDJ: keep-alive, presence, device number claim (1–4) with a staged
   negotiation, and master takeover through the status channel
 - reads beat packets and player status; transmits both when acting as master
-- adaptive transmission rate (~150 ms at rest, ~64 ms while tempo is moving),
-  matching what real players do — a fixed rate adds tens of milliseconds of
-  latency for every player following you
+- follows a tempo change as quickly as a real player does: when you move the
+  pitch, everything downstream moves with it instead of catching up
 - track metadata (title, artist, tempo) over the `dbserver` protocol
-- answers ONC-RPC portmapper queries, which is what stops players from
-  displaying `E-8309 Link Access Error`
+- no `E-8309 Link Access Error` on the players' displays: they ask us
+  something that needs answering, and this firmware answers it
 
 **Ableton Link**
 
@@ -175,12 +174,18 @@ In detail:
 
 **Timing**
 
-- online crystal-drift compensation: the ESP32 and the players do not share a
-  clock, and a stored calibration constant is not enough — the crystal warms up
-  and shifts by roughly 20 ppm in the first five minutes
-- a quiet window around beat transmission keeps display and network traffic off
-  the shared SPI bus, so the packet that carries phase is not delayed by a
-  screen refresh
+This is where most of the work went, and it is the part you cannot see when it
+is working.
+
+- **it holds through a whole set, not just the first ten minutes.** Our clock
+  and the players' are never quite the same, and the difference moves while
+  the device warms up. It is measured continuously and corrected as it runs,
+  so the two sides do not creep apart over the evening
+- **the beat leaves when it is due**, whatever the screen and the two networks
+  are doing at that moment — the downbeat does not wander because something
+  else was busy
+- the measurements behind both, and the comparison against what a real CDJ
+  manages, are in the [protocol notes](docs/protocol-notes.md)
 
 ## Documentation
 
