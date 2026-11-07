@@ -39,8 +39,8 @@ otherwise get away with guessing.
 
 <table>
 <tr>
-<td width="50%"><img src="docs/img/dashboard-idle.png" alt="The dashboard with no bridge running: two independent tempos"></td>
-<td width="50%"><img src="docs/img/dashboard-bridging.png" alt="The dashboard with a bridge running: one shared tempo"></td>
+<td width="50%" align="center"><img src="docs/img/dashboard-idle.png" alt="The dashboard with no bridge running: two independent tempos"></td>
+<td width="50%" align="center"><img src="docs/img/dashboard-bridging.png" alt="The dashboard with a bridge running: one shared tempo"></td>
 </tr>
 <tr>
 <td><b>No bridge.</b> The players at 128.5, the Link session at 122.0. Two
