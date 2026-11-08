@@ -243,8 +243,10 @@ are worth knowing before you start:
   `idf.py fullclean` does **not** do this — it empties the build directory and
   leaves the project configuration alone.
 - **The serial console is on Port B, not USB-C** (USB-C belongs to TinyUSB for
-  MIDI). Connect only GND and TX: the console's RX pin is also the CV output,
-  so an adapter's TX wired to it puts two outputs on one line.
+  MIDI), and it is **3.3 V TTL** — a USB-to-TTL adapter, never RS-232. The
+  console only transmits, which is what leaves the connector's second pin free
+  for the CV output, so connect GND and the device's TX and leave the
+  adapter's own TX unconnected: both of those pins are outputs.
 
 Managed dependencies (LVGL, `esp_abl_link`, the ILI9341 driver, TinyUSB, mDNS)
 come down by themselves from the `idf_component.yml` manifests. WIZnet's

@@ -162,21 +162,27 @@ switched off explicitly (`CONFIG_ESP_CONSOLE_SECONDARY_NONE=y`), because
 leaving it on would give a conflict at start-up instead of a clear build error.
 
 The console is UART0 at 115200, moved off the default pins (GPIO 43/44, which
-sit on the M-Bus under the stack) onto Port B. **It is output-only, on purpose**:
-nothing is ever typed into this console, so the receive pin is not spent on it.
+sit on the M-Bus under the stack) onto Port B.
+
+**The console is configured for transmission only**, deliberately: nothing is
+ever typed into it, so it has no receive side at all. That is what frees the
+second pin of the connector. A UART's pin settings come in pairs, so
+`sdkconfig.defaults` still names a receive pin — but no serial input is read
+from it, and `cv_pin_init()` in `main.c` claims it at start-up and
+reconfigures it as a plain GPIO output. Its comment says so in a line:
+*"Takes the pin from the console and makes it an output."*
+
+So Port B carries two unrelated signals, and **both of them leave the
+device**:
 
 | Port B | GPIO | what it is |
 |---|---|---|
 | pin 2 | 9 | console **TX** — the log comes out here |
-| pin 1 | 8 | **CV pulse output**, taken from the console's nominal RX |
+| pin 1 | 8 | **CV pulse output**. The UART configuration calls this pin a receive pin; nothing receives on it, and this is what it actually does |
 
-The console's RX is configured in `sdkconfig.defaults` because the setting
-comes in pairs, but `cv_pin_init()` in `main.c` reconfigures the pin as a GPIO
-output and keeps it. Its comment says so in one line: *"Takes the pin from the
-console and makes it an output."* Two functions out of one Grove connector,
-deliberately.
+Two functions out of one Grove connector, deliberately.
 
-> **⚠ So, when wiring a serial adapter: GND and the device's TX only.**
+> **⚠ Wiring a serial adapter: GND and the device's TX only.**
 >
 > ```
 > adapter GND  ──  Port B GND
@@ -188,6 +194,17 @@ deliberately.
 > wire. Nothing in the firmware is confused by it — the pin is an output by
 > design — but the cable would be a mistake, and with CV enabled the two would
 > push against each other on every beat.
+
+> **⚠ The levels are TTL at 3.3 V**, straight off the ESP32-S3's pins, so the
+> adapter has to be a 3.3 V USB-to-TTL one — the ordinary FTDI, CP2102 or
+> CH340 kind, with its jumper on 3.3 V if it has one.
+>
+> **Not an RS-232 port, and not an RS-232 converter.** RS-232 signals
+> inverted, at up to ±12 V: it will not read this console, and should its
+> transmit line ever reach Port B it destroys the pin behind it. A 5 V TTL
+> adapter will read the log perfectly well, since the device is the one
+> driving the wire — but keep its transmit line away from this connector for
+> the same reason.
 
 **UART0 and not UART1**, incidentally, because UART1 belongs to MIDI DIN on
 Port C.
