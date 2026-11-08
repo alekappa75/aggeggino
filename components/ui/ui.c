@@ -1284,7 +1284,8 @@ static void buttons_timer(lv_timer_t *t)
      * About is an animation rather than a screen worth photographing, so the
      * touch is left to it. */
     if (s_shots_on && !settings_ui_about_running() &&
-        touched && y >= 248 && x >= 125 && x <= 195) {
+        touched && y >= BSP_STRIP_Y &&
+        x >= BSP_STRIP_CENTRE_LO && x <= BSP_STRIP_CENTRE_HI) {
         if (!shot_start) shot_start = now;
         else if (now - shot_start > 1500000) {
             shot_fired = true;
@@ -1310,9 +1311,9 @@ static void buttons_timer(lv_timer_t *t)
         return;
     }
 
-    /* --- DASHBOARD: input from the physical strip below, y >= 248 --- */
+    /* --- DASHBOARD: input from the physical strip below --- */
     int b = 0;                                  /* -1 left, +1 right, 2 centre, 0 none */
-    if (touched && y >= 248) {
+    if (touched && y >= BSP_STRIP_Y) {
         /* --- ZONES, WITH DEAD BANDS BETWEEN THEM ------------------------
          *
          * [M] The silkscreened circle sits at 160, measured. With contiguous
@@ -1328,9 +1329,10 @@ static void buttons_timer(lv_timer_t *t)
          * The centre stays 70 px wide because it carries two functions — it
          * opens Settings, and a long press locks the interface — so it deserves
          * a generous target. The dead bands are 25 px on each side. */
-        if (x < 100)      b = -1;               /* left arrow */
-        else if (x > 220) b = +1;               /* right arrow */
-        else if (x >= 125 && x <= 195) b = 2;   /* centre circle */
+        if (x < BSP_STRIP_LEFT_MAX)       b = -1;   /* left arrow  */
+        else if (x > BSP_STRIP_RIGHT_MIN) b = +1;   /* right arrow */
+        else if (x >= BSP_STRIP_CENTRE_LO &&
+                 x <= BSP_STRIP_CENTRE_HI) b = 2;   /* centre circle */
         /* else: dead band, b stays 0 and nothing happens */
 
         /* With the screen ROTATED the two arrows swap.

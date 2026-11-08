@@ -111,6 +111,34 @@ bool bsp_touch_read(uint16_t *x, uint16_t *y);
  * kept in step with display_set_flipped(). */
 void bsp_touch_set_flipped(bool on);
 
+/* --- THE SILKSCREENED STRIP BELOW THE DISPLAY ------------------------------
+ *
+ * Three marks printed on the glass, read as touches with y >= BSP_STRIP_Y.
+ * They are PRINTED, so they do not rotate with the image: bsp_touch_set_flipped
+ * deliberately leaves this band unmirrored, and the UI layers invert the
+ * MEANING of the two arrows instead.
+ *
+ *      0 ...... 100 | 125 ... 195 | 220 ...... 319
+ *      left arrow   ^   circle    ^   right arrow
+ *                  dead          dead
+ *
+ * The centre is 70 px wide because it carries two functions — it opens the
+ * settings, and a long press locks the interface — so it deserves a generous
+ * target. The dead bands are 25 px either side, and they are the point: with
+ * contiguous zones one pixel decided the action, and aiming at the circle
+ * while landing on an arrow moves the phase offset, which on the dashboard
+ * means putting the clock out of phase in the middle of a set.
+ *
+ * DEFINED HERE, AND ONLY HERE. The strip is one piece of hardware and is
+ * divided one way. The dashboard, the settings and the screenshot gesture all
+ * read these; none of them keeps its own copy, because a touch has to mean the
+ * same thing on every screen. */
+#define BSP_STRIP_Y          248   /* y at or above this: the strip, not the screen */
+#define BSP_STRIP_LEFT_MAX   100   /* x BELOW this: left arrow   */
+#define BSP_STRIP_CENTRE_LO  125   /* x within these two: circle */
+#define BSP_STRIP_CENTRE_HI  195
+#define BSP_STRIP_RIGHT_MIN  220   /* x ABOVE this: right arrow  */
+
 /* --- the shared SPI bus ----------------------------------------------------- */
 
 /* Create the shared SPI bus. Call ONCE, before registering the display and the

@@ -64,9 +64,8 @@
 #define LIST_BOTTOM  SCR_H
 #define ROWS_VISIBLE ((LIST_BOTTOM - LIST_TOP) / ROW_H)
 
-#define BAR_Y         248
-#define BAR_LEFT_X    145
-#define BAR_RIGHT_X   195
+/* The strip's bands come from bsp_cores3.h and are not restated here: the
+ * dashboard reads the same ones, so a touch means the same thing on both. */
 
 #define SB_W          4
 #define SB_X          (SCR_W - SB_W - 3)
@@ -3500,9 +3499,9 @@ void settings_ui_touch(uint16_t x, uint16_t y, bool pressed)
 
         /* Arrow zone on the physical strip: here and only here it repeats. */
         int zone = 0;
-        if (y >= BAR_Y) {
-            if (x < BAR_LEFT_X)       zone = -1;
-            else if (x > BAR_RIGHT_X) zone = +1;
+        if (y >= BSP_STRIP_Y) {
+            if (x < BSP_STRIP_LEFT_MAX)       zone = -1;
+            else if (x > BSP_STRIP_RIGHT_MIN) zone = +1;
         }
 
         /* WITH THE SCREEN ROTATED THE TWO ARROWS SWAP, as they do on the
@@ -3560,7 +3559,7 @@ void settings_ui_touch(uint16_t x, uint16_t y, bool pressed)
      * in another. */
     if (cur() == SCR_IPENTRY) {
         s_rep_zone = 0;
-        if (y >= BAR_Y) { nav_pop(); return; }     /* the strip: leaves */
+        if (y >= BSP_STRIP_Y) { nav_pop(); return; }     /* the strip: leaves */
 
         /* Touch on the ADDRESS ROW: select that group.
          *
@@ -3641,10 +3640,10 @@ void settings_ui_touch(uint16_t x, uint16_t y, bool pressed)
     /* ================= PASSWORD SCREEN (custom interaction) ================= */
     if (cur() == SCR_NET_PASS) {
         /* physical bar: arrows scroll the alphabet, centre = back */
-        if (y >= BAR_Y) {
+        if (y >= BSP_STRIP_Y) {
             /* The ARROWS are not here: arrow_act() serves them during the
              * press, with repetition. Only the centre remains here. */
-            if (x >= BAR_LEFT_X && x <= BAR_RIGHT_X) nav_pop();
+            if (x >= BSP_STRIP_CENTRE_LO && x <= BSP_STRIP_CENTRE_HI) nav_pop();
             return;
         }
         /* character selector band (y ~96..136): tap centre adds the char */
@@ -3673,11 +3672,11 @@ void settings_ui_touch(uint16_t x, uint16_t y, bool pressed)
         return;   /* ignore taps elsewhere on the password screen */
     }
 
-    /* --- PHYSICAL BAR (y >= 248): left/centre/right --- */
-    if (y >= BAR_Y) {
+    /* --- PHYSICAL BAR: left/centre/right, bands from bsp_cores3.h --- */
+    if (y >= BSP_STRIP_Y) {
         /* Scrolling with the arrows is done by arrow_act() during the press,
          * with auto-repeat. Only the centre is left here. */
-        if (x >= BAR_LEFT_X && x <= BAR_RIGHT_X) nav_pop();
+        if (x >= BSP_STRIP_CENTRE_LO && x <= BSP_STRIP_CENTRE_HI) nav_pop();
         return;
     }
 
