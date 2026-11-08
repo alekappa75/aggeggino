@@ -500,17 +500,10 @@ static bool touch_read_raw(uint16_t *x, uint16_t *y)
     if (s_touch_flipped) {
         /* THE STRIP IS NOT MIRRORED, on either axis.
          *
-         * Its three marks are PRINTED on the glass: they do not rotate. The
-         * user touches the circle where it is, and the panel always reports the
-         * same coordinates — [M] x between 178 and 196, y = 279.
-         *
-         * Mirroring X with 319 - x moved them to 123..141, below the centre
-         * band (145..195), which was then read as the left arrow. The band is
-         * centred on 170 and the mirror axis is at 159.5, so mirroring moves it
-         * to 124..174 and the circle falls outside.
-         *
-         * Left intact, the already calibrated bands keep working exactly as
-         * they do with the screen upright.
+         * Its three marks are PRINTED on the glass and do not rotate with the
+         * image. Somebody reaching for the circle reaches for where the circle
+         * is, so the panel has to go on reporting the same x whichever way up
+         * the device is, and the bands in bsp_cores3.h keep working untouched.
          *
          * THE ARROWS do swap, but that is a matter of ACTION rather than
          * coordinates: the direction is inverted upstream, where the zone is
@@ -526,8 +519,8 @@ static bool touch_read_raw(uint16_t *x, uint16_t *y)
             rx = (rx > BSP_TOUCH_X_MAX) ? 0 : (uint16_t)(BSP_TOUCH_X_MAX - rx);
 
         /* Same reason for Y: mirrored inside the display, not on the strip.
-         * Mirroring the whole height swapped the two worlds — the top of the
-         * screen ended up in the strip and vice versa. */
+         * Mirroring the whole height would swap the two worlds, putting the
+         * top of the screen in the strip and the strip at the top. */
         if (ry <= BSP_TOUCH_SCREEN_Y_MAX)
             ry = (uint16_t)(BSP_TOUCH_SCREEN_Y_MAX - ry);
     }
