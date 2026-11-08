@@ -80,6 +80,13 @@ sequencer, a drum machine, a trigger input.
 **The output is on Port B, pin 1.** The menu says so under **Enabled**, and in
 those words, because the GPIO number has no marking on the connector.
 
+**The pulse is 3.3 V**, and it comes straight off the ESP32-S3's pin with
+nothing in between — no buffer, no level shifting. Two things follow. Most
+trigger and clock inputs take 3.3 V as a high without complaint, but a module
+that insists on 5 V will need something between it and this pin. And it is a
+logic pin rather than a driver: it is meant to be read by a high-impedance
+input, not to pull a load.
+
 ![Settings, Clock, Sink, CV](img/settings-cv.png)
 
 | entry | options | |
