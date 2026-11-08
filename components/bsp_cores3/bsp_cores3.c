@@ -513,10 +513,15 @@ static bool touch_read_raw(uint16_t *x, uint16_t *y)
          * they do with the screen upright.
          *
          * THE ARROWS do swap, but that is a matter of ACTION rather than
-         * coordinates: settings_ui inverts the direction when the screen is
-         * rotated. The arrow physically on the left, seen on a turned device,
-         * appears to the user on the right — and its upside-down glyph looks
-         * exactly like a right arrow. */
+         * coordinates: the direction is inverted upstream, where the zone is
+         * turned into a command. The arrow physically on the left, seen on a
+         * turned device, appears to the user on the right — and its
+         * upside-down glyph looks exactly like a right arrow.
+         *
+         * In TWO places, because the two never meet: ui.c for the dashboard,
+         * settings_ui.c for the menus. With the settings open ui.c forwards
+         * the touch and returns before reaching its own inversion, so a single
+         * one leaves the other half of the interface unrotated. */
         if (ry <= BSP_TOUCH_SCREEN_Y_MAX)
             rx = (rx > BSP_TOUCH_X_MAX) ? 0 : (uint16_t)(BSP_TOUCH_X_MAX - rx);
 

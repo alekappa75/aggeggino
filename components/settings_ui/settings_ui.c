@@ -3504,6 +3504,27 @@ void settings_ui_touch(uint16_t x, uint16_t y, bool pressed)
             if (x < BAR_LEFT_X)       zone = -1;
             else if (x > BAR_RIGHT_X) zone = +1;
         }
+
+        /* WITH THE SCREEN ROTATED THE TWO ARROWS SWAP, as they do on the
+         * dashboard.
+         *
+         * It is not a remapping of coordinates: the three marks are printed on
+         * the glass and do not rotate, so the panel reports the same x
+         * whichever way up the device is — which is exactly why bsp_cores3
+         * leaves the strip unmirrored while it mirrors the display. What has
+         * to change is the MEANING: the arrow physically on the left is on the
+         * user's right once the device is turned round, and its upside-down
+         * glyph looks precisely like a right arrow.
+         *
+         * The centre is untouched, being symmetric, and it is handled on
+         * release rather than here.
+         *
+         * The dashboard does the same thing in ui.c. It has to be done twice
+         * because the two never meet: with the settings open, ui.c hands the
+         * touch to settings_ui_touch() and returns before reaching its own
+         * inversion. */
+        if (zone != 0 && display_flipped()) zone = -zone;
+
         if (zone != 0) {
             if (zone != s_rep_zone) {
                 /* first step: immediate, so a short touch stays responsive */
