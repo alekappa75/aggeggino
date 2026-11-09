@@ -14,6 +14,11 @@ an ESP32-S3 (M5Stack CoreS3-SE). Acts as a real tempo master on both sides, and
 puts the same timeline out again as MIDI clock — over USB-C, over DIN or over
 the network — as analog CV pulses and as OSC.**
 
+[**Download the firmware**](https://github.com/alekappa75/aggeggino/releases/latest) ·
+[**Source on GitHub**](https://github.com/alekappa75/aggeggino) ·
+[**The manual**](docs/) ·
+[**Protocol notes**](docs/protocol-notes.md)
+
 ---
 
 ## What it does
@@ -219,7 +224,23 @@ source. There is also a section listing what is still unknown.
 A declared uncertainty is worth more than an invented certainty: a guess marked
 as a guess can be tested, while a guess stated as fact gets built on.
 
-## Building
+## Getting the firmware onto it
+
+**You do not have to build it.** Every
+[release](https://github.com/alekappa75/aggeggino/releases/latest) carries one
+`.bin` holding the bootloader, the partition table and the application
+together, and flashing it needs no toolchain at all:
+
+```
+pip install esptool
+esptool.py --chip esp32s3 -p <PORT> write_flash 0x0 aggeggino-v1.0.0.bin
+```
+
+Mind that this erases the stored settings: the image spans the NVS partition,
+so networks, keys and phase offsets go back to their defaults. On a new device
+that is what you want.
+
+## Building it yourself
 
 ESP-IDF 5.5.4.
 

@@ -1,5 +1,8 @@
 # AGGEGGINO — documentation
 
+[**← the project**](https://github.com/alekappa75/aggeggino) ·
+[**Download the firmware**](https://github.com/alekappa75/aggeggino/releases/latest)
+
 The firmware's own documentation, versioned with the code it describes. A manual
 for a menu-driven device goes stale the moment the menu moves, so it lives in
 the repository rather than in a wiki: `git checkout` of a tag gives you the
